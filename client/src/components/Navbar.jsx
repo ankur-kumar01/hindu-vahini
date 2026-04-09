@@ -58,7 +58,7 @@ export default function Navbar() {
             </a>
           ))}
           <Link to="/donate" className={`font-medium border-2 rounded-full px-6 py-2.5 transition-colors ${isSolid ? 'border-saffron text-saffron hover:bg-saffron hover:text-white' : 'border-white/50 text-white hover:border-white hover:bg-white/10'}`}>Donate</Link>
-          <a href="/#contact" className="font-medium bg-saffron text-white rounded-full px-8 py-2.5 shadow-md hover:bg-saffronLight hover:-translate-y-0.5 transition-all">Join Us</a>
+          <Link to="/join-us" className="font-medium bg-saffron text-white rounded-full px-8 py-2.5 shadow-md hover:bg-saffronLight hover:-translate-y-0.5 transition-all">Join Us</Link>
         </nav>
       </div>
 
@@ -98,13 +98,13 @@ export default function Navbar() {
             >
               Donate Now
             </Link>
-            <a 
-              href="/#contact" 
+            <Link 
+              to="/join-us" 
               onClick={() => setIsMenuOpen(false)}
               className="bg-saffron text-white text-center py-4 rounded-xl font-bold shadow-lg shadow-saffron/20 active:scale-95 transition-all"
             >
               Join Us
-            </a>
+            </Link>
           </nav>
           
           <div className="mt-auto p-8 border-t border-gray-100 text-center">
