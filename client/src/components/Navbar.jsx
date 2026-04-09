@@ -94,10 +94,17 @@ export default function Navbar() {
             <Link 
               to="/donate" 
               onClick={() => setIsMenuOpen(false)}
-              className="mt-4 bg-saffron text-white text-center py-4 rounded-xl font-bold shadow-lg shadow-saffron/20 active:scale-95 transition-all"
+              className="mt-4 bg-transparent border-2 border-saffron text-saffron text-center py-3.5 rounded-xl font-bold active:scale-95 transition-all"
             >
               Donate Now
             </Link>
+            <a 
+              href="/#contact" 
+              onClick={() => setIsMenuOpen(false)}
+              className="bg-saffron text-white text-center py-4 rounded-xl font-bold shadow-lg shadow-saffron/20 active:scale-95 transition-all"
+            >
+              Join Us
+            </a>
           </nav>
           
           <div className="mt-auto p-8 border-t border-gray-100 text-center">

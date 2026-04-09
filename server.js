@@ -17,8 +17,9 @@ app.use(morgan('dev'));
 // Static Resource Serving
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Explicit Route Handling (Optional for standard HTML setups)
-app.get('/', (req, res) => {
+// SPA Catch-all Route: Redirect all unmatched GET requests to index.html
+// This allows React Router to handle deep links like /donate correctly
+app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
