@@ -35,7 +35,7 @@ export default function Navbar() {
           <Link to="/" className={`font-medium hover:text-saffron transition-colors ${isSolid ? 'text-gray-800' : 'text-white/90'}`}>Home</Link>
           <a href="/#about" className={`font-medium hover:text-saffron transition-colors ${isSolid ? 'text-gray-800' : 'text-white/90'}`}>About</a>
           <a href="/#initiatives" className={`font-medium hover:text-saffron transition-colors ${isSolid ? 'text-gray-800' : 'text-white/90'}`}>Initiatives</a>
-          <a href="/#donate" className={`font-medium border-2 rounded-full px-6 py-2.5 transition-colors ${isSolid ? 'border-saffron text-saffron hover:bg-saffron hover:text-white' : 'border-white/50 text-white hover:border-white hover:bg-white/10'}`}>Donate</a>
+          <Link to="/donate" className={`font-medium border-2 rounded-full px-6 py-2.5 transition-colors ${isSolid ? 'border-saffron text-saffron hover:bg-saffron hover:text-white' : 'border-white/50 text-white hover:border-white hover:bg-white/10'}`}>Donate</Link>
           <a href="#contact" className="font-medium bg-saffron text-white rounded-full px-8 py-2.5 shadow-md hover:bg-saffronLight hover:-translate-y-0.5 transition-all">Join Us</a>
         </nav>
       </div>

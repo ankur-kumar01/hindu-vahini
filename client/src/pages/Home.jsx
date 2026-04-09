@@ -10,19 +10,10 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import LeaderCard from '../components/LeaderCard';
-import DonationModal from '../components/DonationModal';
 import SEO from '../components/SEO';
 import { LEADERS, GALLERY_IMAGES } from '../constants/data';
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAmount, setSelectedAmount] = useState('');
-
-  const openDonation = (amt = '') => {
-    setSelectedAmount(amt);
-    setIsModalOpen(true);
-  };
-
   return (
     <div className="w-full">
       <SEO 
@@ -55,12 +46,12 @@ export default function Home() {
             Join us in our mission to protect heritage, foster unity, advance education, and create lasting social impact.
           </p>
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-            <button 
-              onClick={() => openDonation()} 
+            <Link 
+              to="/donate" 
               className="bg-saffron text-white px-10 py-4 rounded-full font-bold hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-[0_4px_15px_rgba(255,153,51,0.3)]"
             >
               Donate Now
-            </button>
+            </Link>
             <a 
               href="#about" 
               className="bg-transparent border-2 border-white/50 text-white px-10 py-[14px] rounded-full font-bold hover:bg-white hover:text-dark hover:border-white hover:-translate-y-1 transition-all w-full sm:w-auto"
@@ -218,11 +209,10 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-4">
-            <button onClick={() => openDonation('500')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹500</button>
-            <button onClick={() => openDonation('1000')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹1000</button>
-            <button onClick={() => openDonation('5000')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹5000</button>
-            <button onClick={() => openDonation()} className="bg-dark text-white px-8 py-3 rounded-full font-semibold hover:bg-dark/90 transition-colors shadow-lg">Donate Custom</button>
+          <div className="flex justify-center">
+            <Link to="/donate" className="bg-dark text-white px-12 py-4 rounded-full font-bold hover:bg-dark/90 transition-all shadow-xl hover:-translate-y-1 inline-flex items-center gap-2">
+              Go to Donation Page
+            </Link>
           </div>
         </div>
       </section>
@@ -249,12 +239,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-
-      <DonationModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        initialAmount={selectedAmount} 
-      />
     </div>
   );
 }

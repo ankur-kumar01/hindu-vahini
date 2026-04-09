@@ -28,7 +28,7 @@ export default function Footer() {
             <li><Link to="/" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Home</Link></li>
             <li><a href="/#about" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">About Us</a></li>
             <li><a href="/#initiatives" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Our Initiatives</a></li>
-            <li><a href="/#donate" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Donate</a></li>
+            <li><Link to="/donate" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Donate</Link></li>
           </ul>
         </div>
 
