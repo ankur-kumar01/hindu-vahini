@@ -1,8 +1,14 @@
 import { GALLERY_IMAGES } from '../constants/data';
+import SEO from '../components/SEO';
 
 export default function Gallery() {
   return (
     <div className="pt-32 pb-24 bg-light min-h-screen">
+      <SEO 
+        title="Journey Highlights" 
+        description="Glimpses of our recent community gatherings and cultural initiatives through our official picture gallery."
+        url="/gallery"
+      />
        <div className="max-w-7xl mx-auto px-6 text-center">
          <h1 className="text-4xl md:text-5xl font-bold text-dark mb-4">Journey Highlights</h1>
          <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-16">Glimpses of our recent events, community gatherings, and cultural initiatives.</p>

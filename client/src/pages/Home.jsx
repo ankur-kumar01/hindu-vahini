@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
@@ -9,11 +10,26 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import LeaderCard from '../components/LeaderCard';
+import DonationModal from '../components/DonationModal';
+import SEO from '../components/SEO';
 import { LEADERS, GALLERY_IMAGES } from '../constants/data';
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState('');
+
+  const openDonation = (amt = '') => {
+    setSelectedAmount(amt);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="w-full">
+      <SEO 
+        title="Preserving Culture. Empowering Communities." 
+        description="HinduVahini is a cultural NGO dedicated to preserving our rich heritage, advancing educational empowerment, and creating a sustainable positive impact on society."
+        url="/"
+      />
       {/* Hero Section */}
       <section id="home" className="relative flex items-center justify-center min-h-[90vh] text-center px-4 overflow-hidden" 
         style={{
@@ -32,7 +48,12 @@ export default function Home() {
             Join us in our mission to protect heritage, foster unity, advance education, and create lasting social impact.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="#donate" className="bg-saffron text-white px-8 py-3.5 rounded-full font-medium hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-lg">Donate Now</a>
+            <button 
+              onClick={() => openDonation()} 
+              className="bg-saffron text-white px-8 py-3.5 rounded-full font-medium hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-lg"
+            >
+              Donate Now
+            </button>
             <a href="#about" className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white/10 hover:-translate-y-1 transition-all w-full sm:w-auto">Discover Our Mission</a>
           </div>
         </div>
@@ -186,10 +207,10 @@ export default function Home() {
           </div>
           
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹500</button>
-            <button className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹1000</button>
-            <button className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹5000</button>
-            <button className="bg-dark text-white px-8 py-3 rounded-full font-semibold hover:bg-dark/90 transition-colors shadow-lg">Donate Custom</button>
+            <button onClick={() => openDonation('500')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹500</button>
+            <button onClick={() => openDonation('1000')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹1000</button>
+            <button onClick={() => openDonation('5000')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹5000</button>
+            <button onClick={() => openDonation()} className="bg-dark text-white px-8 py-3 rounded-full font-semibold hover:bg-dark/90 transition-colors shadow-lg">Donate Custom</button>
           </div>
         </div>
       </section>
@@ -216,6 +237,12 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <DonationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        initialAmount={selectedAmount} 
+      />
     </div>
   );
 }
