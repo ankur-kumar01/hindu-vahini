@@ -30,31 +30,43 @@ export default function Home() {
         description="HinduVahini is a cultural NGO dedicated to preserving our rich heritage, advancing educational empowerment, and creating a sustainable positive impact on society."
         url="/"
       />
-      {/* Hero Section */}
-      <section id="home" className="relative flex items-center justify-center min-h-[90vh] text-center px-4 overflow-hidden" 
-        style={{
-          background: 'url(/upload/gallery_img/g1.jpeg) center/cover no-repeat',
-          backgroundAttachment: 'fixed'
-        }}>
-        <div className="absolute inset-0 bg-dark/75 z-0"></div>
-        <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center fade-in pt-20">
-          <span className="bg-saffron text-white text-xs font-bold uppercase tracking-widest py-1.5 px-4 rounded-full mb-6 relative">
+      
+      {/* Hero Section - Restored to original aesthetics */}
+      <section id="home" className="relative flex items-center justify-center min-h-[95vh] text-center px-6 overflow-hidden pt-20">
+        {/* Background Layer with Animation */}
+        <div className="absolute inset-[-5%] z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-dark/95 to-dark/85 z-10"></div>
+          <div className="absolute inset-0 hero-radial-gradient z-20"></div>
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Akshardham_Temple_Delhi_%287367683918%29.jpg" 
+            alt="Hero Background" 
+            className="w-full h-full object-cover animate-kenburns"
+          />
+        </div>
+
+        <div className="relative z-30 max-w-4xl mx-auto flex flex-col items-center fade-in">
+          <span className="bg-saffron/20 text-saffron text-sm font-bold uppercase tracking-[2px] py-2 px-5 rounded-full mb-6 border border-saffron/50">
             Together We Conserve
           </span>
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Preserving Culture.<br />Empowering Communities.
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
+            Preserving Culture.<br /><span className="text-white">Empowering Communities.</span>
           </h1>
-          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-10 font-light">
+          <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
             Join us in our mission to protect heritage, foster unity, advance education, and create lasting social impact.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
             <button 
               onClick={() => openDonation()} 
-              className="bg-saffron text-white px-8 py-3.5 rounded-full font-medium hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-lg"
+              className="bg-saffron text-white px-10 py-4 rounded-full font-bold hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-[0_4px_15px_rgba(255,153,51,0.3)]"
             >
               Donate Now
             </button>
-            <a href="#about" className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white/10 hover:-translate-y-1 transition-all w-full sm:w-auto">Discover Our Mission</a>
+            <a 
+              href="#about" 
+              className="bg-transparent border-2 border-white/50 text-white px-10 py-[14px] rounded-full font-bold hover:bg-white hover:text-dark hover:border-white hover:-translate-y-1 transition-all w-full sm:w-auto"
+            >
+              Discover Our Mission
+            </a>
           </div>
         </div>
       </section>
