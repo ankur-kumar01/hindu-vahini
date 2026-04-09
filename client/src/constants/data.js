@@ -1,0 +1,55 @@
+export const LEADERS = [
+  {
+    name: "Ashwani Mishra",
+    role: "Rashtriya Adhyaksh — HinduVahini",
+    bio: "Shri Ashwani Mishra ji leads HinduVahini's national mission with unwavering dedication to Hindu cultural values.",
+    image: "/upload/leaders_img/ashwani_mishra.jpg",
+    isPresident: true,
+    phones: ["+91 99355 68569", "+91 83183 39152"]
+  },
+  {
+    name: "Anand Tiwari",
+    role: "Goraksha Pramukh — HinduVahini",
+    bio: "Shri Anand Tiwari ji heads all campaigns related to cow protection and welfare.",
+    image: "/upload/leaders_img/anand_tiwari.jpeg",
+    phones: ["+91 90444 87748"]
+  },
+  {
+    name: "Vimal Mishra",
+    role: "Rashtriya Prabhari — HinduVahini",
+    bio: "Shri Vimal Mishra ji guides the strategic initiatives and organizational expansion.",
+    image: "/upload/leaders_img/vimal_mishra.jpeg",
+    phones: ["+91 80905 84363"]
+  },
+  {
+    name: "Ruchin Sharma",
+    role: "Pradesh Rajneetik Salahkar — HinduVahini",
+    bio: "Shri Ruchin Sharma ji provides crucial political and sociological advisory.",
+    image: "/upload/leaders_img/ruchin_sharma.jpeg",
+    phones: ["+91 84291 00010"]
+  },
+  {
+    name: "Surendra Chauhan",
+    role: "Sah-Sashastra Pramukh — HinduVahini",
+    bio: "Shri Surendra Chauhan ji coordinates security and discipline across statewide events.",
+    image: "/upload/leaders_img/surendra_chauhan.jpeg",
+    phones: ["+91 96515 28882"]
+  },
+  {
+    name: "Akhilesh Dwivedi",
+    role: "Pradesh Vishesh Aamantarit Sadasya",
+    bio: "Shri Akhilesh Dwivedi ji represents core organizational viewpoints in significant assemblies.",
+    image: "/upload/leaders_img/akhilesh_dwivedi.jpeg",
+    phones: ["+91 63935 91931"]
+  }
+];
+
+export const GALLERY_IMAGES = [
+  { src: "/upload/gallery_img/g1.jpeg", span: "row-span-2 col-span-2" },
+  { src: "/upload/gallery_img/g2.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g3.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g4.jpeg", span: "row-span-1 col-span-2 md:col-span-1" },
+  { src: "/upload/gallery_img/g5.jpeg", span: "row-span-2 col-span-1" },
+  { src: "/upload/gallery_img/g6.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g7.jpeg", span: "row-span-1 col-span-1" },
+];
