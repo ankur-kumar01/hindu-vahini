@@ -19,7 +19,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // SPA Catch-all Route: Redirect all unmatched GET requests to index.html
 // This allows React Router to handle deep links like /donate correctly
-app.get('*', (req, res) => {
+// Using Regex literal to avoid Express 5 string-parsing issues
+app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
