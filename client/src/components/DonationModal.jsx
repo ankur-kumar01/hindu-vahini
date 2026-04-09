@@ -1,5 +1,5 @@
 import { QRCodeCanvas } from 'qrcode.react';
-import { X, WhatsappLogo, Check, Copy } from '@phosphor-icons/react';
+import { X, Check, Copy } from '@phosphor-icons/react';
 import { useState } from 'react';
 
 export default function DonationModal({ isOpen, onClose, initialAmount }) {
@@ -19,87 +19,87 @@ export default function DonationModal({ isOpen, onClose, initialAmount }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
       {/* Overlay */}
       <div className="absolute inset-0 bg-dark/80 backdrop-blur-sm fade-in" onClick={onClose}></div>
       
       {/* Modal Content */}
-      <div className="relative bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animation-slide-up">
+      <div className="relative bg-white w-full max-w-sm rounded-[28px] shadow-2xl overflow-y-auto max-h-[90vh] animation-slide-up">
         
-        {/* Header */}
-        <div className="bg-saffron p-6 text-white text-center relative">
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors">
-            <X size={24} weight="bold" />
+        {/* Header - Scaled down */}
+        <div className="bg-saffron p-5 text-white text-center relative">
+          <button onClick={onClose} className="absolute top-3 right-3 p-1.5 hover:bg-white/20 rounded-full transition-colors">
+            <X size={20} weight="bold" />
           </button>
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-             <img src="/logo.png" alt="Logo" className="w-12 h-12 object-cover rounded-full" />
+          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-md">
+             <img src="/logo.png" alt="Logo" className="w-9 h-9 object-cover rounded-full" />
           </div>
-          <h2 className="text-2xl font-bold font-heading">{trustName}</h2>
-          <p className="text-white/90 text-sm mt-1">Support the Cultural Renaissance</p>
+          <h2 className="text-xl font-bold font-heading leading-tight">{trustName}</h2>
+          <p className="text-white/80 text-[10px] mt-0.5 uppercase tracking-wider font-semibold">Unity & Preservation</p>
         </div>
 
-        {/* Amount Input */}
-        <div className="p-8 text-center">
-          <div className="mb-6">
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Contribution Amount</label>
-            <div className="relative inline-block w-full max-w-[200px]">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-gray-400">₹</span>
+        {/* Amount Input - More compact */}
+        <div className="p-6 text-center">
+          <div className="mb-4">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Enter Amount</label>
+            <div className="relative inline-block w-full max-w-[160px]">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-400">₹</span>
               <input 
                 type="number" 
                 value={amount} 
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full text-4xl font-bold text-dark text-center py-2 bg-transparent border-b-2 border-gray-100 focus:border-saffron outline-none transition-colors"
+                className="w-full text-3xl font-bold text-dark text-center py-1 bg-transparent border-b-2 border-gray-100 focus:border-saffron outline-none transition-colors"
                 autoFocus
               />
             </div>
           </div>
 
-          {/* QR Code */}
-          <div className="bg-light p-6 rounded-2xl inline-block shadow-inner mb-6 border border-gray-50">
+          {/* QR Code - Smaller size for responsiveness */}
+          <div className="bg-light p-4 rounded-xl inline-block shadow-inner mb-5 border border-gray-50">
             {amount > 0 ? (
               <QRCodeCanvas 
                 value={upiUri} 
-                size={200}
-                level="H"
+                size={160}
+                level="M"
                 includeMargin={true}
                 imageSettings={{
                   src: "/logo.png",
                   x: undefined,
                   y: undefined,
-                  height: 40,
-                  width: 40,
+                  height: 32,
+                  width: 32,
                   excavate: true,
                 }}
               />
             ) : (
-              <div className="w-[200px] h-[200px] flex items-center justify-center text-gray-400 font-medium italic">
-                Enter amount to <br/> generate QR
+              <div className="w-[160px] h-[160px] flex items-center justify-center text-gray-400 text-xs font-medium italic leading-tight p-4">
+                Enter amount above <br/> to generate QR
               </div>
             )}
           </div>
 
-          {/* UPI ID Copy */}
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <code className="bg-gray-50 px-4 py-2 rounded-lg text-sm font-mono text-gray-600 border border-gray-100">{upiId}</code>
+          {/* UPI ID Copy - Compacted */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <code className="bg-gray-50 px-3 py-1.5 rounded-lg text-[11px] font-mono text-gray-500 border border-gray-100">{upiId}</code>
             <button 
               onClick={copyToClipboard}
-              className={`p-2 rounded-lg transition-all ${copied ? 'bg-green-500 text-white' : 'bg-saffron/10 text-saffron hover:bg-saffron/20'}`}
+              className={`p-1.5 rounded-lg transition-all ${copied ? 'bg-green-500 text-white' : 'bg-saffron/10 text-saffron hover:bg-saffron/20'}`}
             >
-              {copied ? <Check size={20} weight="bold" /> : <Copy size={20} weight="bold" />}
+              {copied ? <Check size={16} weight="bold" /> : <Copy size={16} weight="bold" />}
             </button>
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
              <a 
                href={upiUri} 
-               className={`py-4 rounded-full font-bold text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 ${amount > 0 ? 'bg-dark hover:bg-dark/90' : 'bg-gray-300 pointer-events-none'}`}
+               className={`py-3.5 rounded-full text-sm font-bold text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 ${amount > 0 ? 'bg-dark hover:bg-dark/90' : 'bg-gray-300 pointer-events-none'}`}
              >
-               Pay with UPI App
+               Pay securely via UPI
              </a>
-             <p className="text-[10px] text-gray-400 px-4 mt-2 italic leading-relaxed">
-               Secure payment via Unified Payments Interface. Your contribution goes directly to the Trust's social welfare foundation.
+             <p className="text-[9px] text-gray-400 px-2 mt-1 leading-[1.4] italic">
+               Secure direct transfer to our welfare foundation.
              </p>
           </div>
         </div>
