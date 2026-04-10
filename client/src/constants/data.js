@@ -29,11 +29,11 @@ export const LEADERS = [
     phones: ["+91 84291 00010"]
   },
   {
-    name: "Surendra Kumar",
+    name: "Surender Kumar",
     role: "Rashtriya upadhyaksh — HinduVahini",
-    bio: "Shri Surendra Kumar ji coordinates security and discipline across statewide events.",
+    bio: "Shri Surender Kumar ji coordinates security and discipline across statewide events.",
     image: "/upload/leaders_img/surendra_kumar.jpeg",
-    phones: ["+91 96515 28882"]
+    phones: ["+91 9812113501"]
   },
   {
     name: "Akshay Sharma",
