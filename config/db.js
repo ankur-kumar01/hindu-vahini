@@ -1,8 +1,9 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
+    host: '127.0.0.1',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'Root9559#',
     database: process.env.DB_NAME || 'hinduvahini_db'

@@ -1,13 +1,26 @@
 const fs = require('fs');
 const path = require('path');
-const db = require('../config/db');
+const mysql = require('mysql2/promise');
+
+// Hardcode credentials directly for migration runner (bypasses dotenv interference)
+const DB_CONFIG = {
+    host: '127.0.0.1',
+    user: 'root',
+    password: 'Root9559#',
+    database: 'hinduvahini_db',
+    multipleStatements: true
+};
 
 async function migrate() {
     console.log('🚀 Starting Database Migrations...\n');
+    let pool;
 
     try {
+        // Connect directly
+        pool = await mysql.createPool(DB_CONFIG);
+
         // 1. Ensure migrations tracking table exists
-        await db.query(`
+        await pool.query(`
             CREATE TABLE IF NOT EXISTS _migrations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL UNIQUE,
@@ -26,7 +39,7 @@ async function migrate() {
             .sort();
 
         // 3. Get already executed migrations
-        const [executed] = await db.query('SELECT name FROM _migrations');
+        const [executed] = await pool.query('SELECT name FROM _migrations');
         const executedNames = executed.map(row => row.name);
 
         // 4. Run pending migrations
@@ -38,15 +51,26 @@ async function migrate() {
                 const filePath = path.join(migrationsDir, file);
                 const sql = fs.readFileSync(filePath, 'utf8');
 
-                // Split SQL by semicolon
-                const statements = sql.split(';').filter(stmt => stmt.trim() !== '');
+                // Split statements by semicolon and clean each one
+                const statements = sql
+                    .split(';')
+                    .map(stmt => 
+                        // Remove comment lines from each statement before executing
+                        stmt.split('\n')
+                            .filter(line => !line.trim().startsWith('--'))
+                            .join('\n')
+                            .trim()
+                    )
+                    .filter(stmt => stmt.length > 0);
                 
                 for (let statement of statements) {
-                    await db.query(statement);
+                    if (statement.trim()) {
+                        await pool.query(statement);
+                    }
                 }
 
                 // Record migration
-                await db.query('INSERT INTO _migrations (name) VALUES (?)', [file]);
+                await pool.query('INSERT INTO _migrations (name) VALUES (?)', [file]);
                 console.log(`✅ Success: ${file}\n`);
                 count++;
             }
@@ -63,6 +87,7 @@ async function migrate() {
         console.error('Error:', error.message);
         process.exit(1);
     } finally {
+        if (pool) await pool.end();
         process.exit(0);
     }
 }

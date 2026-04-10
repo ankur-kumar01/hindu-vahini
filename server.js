@@ -22,6 +22,7 @@ app.use(express.json()); // Essential for parsing form data
 
 // API Routes
 app.use('/api', require('./routes/api'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Static Resource Serving
 app.use(express.static(path.join(__dirname, 'public')));
