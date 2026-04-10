@@ -1,24 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const mysql = require('mysql2/promise');
 
-// Hardcode credentials directly for migration runner (bypasses dotenv interference)
-const DB_CONFIG = {
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'Root9559#',
-    database: 'hinduvahini_db',
-    multipleStatements: true
-};
-
-async function migrate() {
+async function migrate(pool) {
     console.log('🚀 Starting Database Migrations...\n');
-    let pool;
 
     try {
-        // Connect directly
-        pool = await mysql.createPool(DB_CONFIG);
-
         // 1. Ensure migrations tracking table exists
         await pool.query(`
             CREATE TABLE IF NOT EXISTS _migrations (
@@ -85,11 +71,33 @@ async function migrate() {
     } catch (error) {
         console.error('\n❌ Migration Failed!');
         console.error('Error:', error.message);
-        process.exit(1);
-    } finally {
-        if (pool) await pool.end();
-        process.exit(0);
+        throw error; // Let the caller handle the exit
     }
 }
 
-migrate();
+// Support running directly via `npm run migrate`
+if (require.main === module) {
+    const mysql = require('mysql2/promise');
+    require('dotenv').config({ path: path.resolve(__dirname, '../.env'), override: true });
+    
+    (async () => {
+        let directPool;
+        try {
+            directPool = mysql.createPool({
+                host: process.env.DB_HOST,
+                user: process.env.DB_USER,
+                password: process.env.DB_PASSWORD,
+                database: process.env.DB_NAME,
+                multipleStatements: true
+            });
+            await migrate(directPool);
+            process.exit(0);
+        } catch (err) {
+            process.exit(1);
+        } finally {
+            if (directPool) await directPool.end();
+        }
+    })();
+}
+
+module.exports = migrate;

@@ -7,13 +7,7 @@ const authMiddleware = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'hinduvahini_super_secret_key_2024';
 
-// Fully hardcoded DB pool to bypass dotenvx env injection at runtime
-const pool = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'Root9559#',
-    database: 'hinduvahini_db',
-});
+const { query } = require('../config/db');
 
 // @route   POST /api/admin/login
 // @desc    Authenticate admin and return JWT
@@ -25,7 +19,7 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const [rows] = await pool.query('SELECT * FROM admins WHERE email = ?', [email]);
+        const [rows] = await query('SELECT * FROM admins WHERE email = ?', [email]);
 
         if (rows.length === 0) {
             return res.status(401).json({ error: 'Invalid email or password.' });
@@ -65,7 +59,7 @@ router.post('/login', async (req, res) => {
 // @desc    Get currently authenticated admin profile
 router.get('/me', authMiddleware, async (req, res) => {
     try {
-        const [rows] = await pool.query(
+        const [rows] = await query(
             'SELECT id, name, email, phone, avatar, created_at FROM admins WHERE id = ?',
             [req.admin.id]
         );
@@ -87,7 +81,7 @@ router.put('/profile', authMiddleware, async (req, res) => {
     const { name, phone } = req.body;
 
     try {
-        await pool.query(
+        await query(
             'UPDATE admins SET name = ?, phone = ? WHERE id = ?',
             [name, phone, req.admin.id]
         );
@@ -108,7 +102,7 @@ router.put('/change-password', authMiddleware, async (req, res) => {
     }
 
     try {
-        const [rows] = await pool.query('SELECT password FROM admins WHERE id = ?', [req.admin.id]);
+        const [rows] = await query('SELECT password FROM admins WHERE id = ?', [req.admin.id]);
         const isMatch = await bcrypt.compare(currentPassword, rows[0].password);
 
         if (!isMatch) {
@@ -116,7 +110,7 @@ router.put('/change-password', authMiddleware, async (req, res) => {
         }
 
         const hashed = await bcrypt.hash(newPassword, 10);
-        await pool.query('UPDATE admins SET password = ? WHERE id = ?', [hashed, req.admin.id]);
+        await query('UPDATE admins SET password = ? WHERE id = ?', [hashed, req.admin.id]);
 
         res.json({ message: 'Password changed successfully.' });
     } catch (error) {
