@@ -51,4 +51,28 @@ router.post('/contact', async (req, res) => {
     }
 });
 
+// @route   GET /api/leaders
+// @desc    Get all active leaders ordered by display priority
+router.get('/leaders', async (req, res) => {
+    try {
+        const [rows] = await query('SELECT * FROM leaders ORDER BY display_order ASC, id ASC');
+        res.json(rows);
+    } catch (error) {
+        console.error('API Error (Leaders):', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   GET /api/gallery
+// @desc    Get all gallery images
+router.get('/gallery', async (req, res) => {
+    try {
+        const [rows] = await query('SELECT * FROM gallery_images ORDER BY display_order ASC, id DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error('API Error (Gallery):', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
 module.exports = router;

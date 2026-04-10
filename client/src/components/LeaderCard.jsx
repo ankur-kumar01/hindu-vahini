@@ -7,11 +7,11 @@ export default function LeaderCard({ leader, isVertical = false, onClick }) {
       className={`bg-white rounded-2xl overflow-hidden group hover:shadow-img transition-all duration-300 transform hover:-translate-y-1 cursor-pointer ${isVertical ? 'shadow-soft border border-gray-100' : ''}`}
     >
       <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
-        <img src={leader.image} alt={leader.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src={leader.image_url} alt={leader.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
              <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-xs">View Identity ID</span>
         </div>
-        {leader.isPresident && (
+        {leader.designation === 'President' && (
           <div className="absolute bottom-3 right-3 bg-saffron text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md z-10 transition-transform group-hover:scale-110">
             <CrownSimple weight="fill" size={20} />
           </div>
@@ -22,11 +22,11 @@ export default function LeaderCard({ leader, isVertical = false, onClick }) {
         <span className="text-sm font-semibold text-saffron block mb-3">{leader.role}</span>
         <p className="text-gray-600 text-sm mb-5 leading-relaxed">{leader.bio}</p>
         <div className="flex flex-col gap-2">
-          {leader.phones.map((phone, i) => (
-            <div key={i} className="flex items-center gap-2 text-sm font-medium text-gray-800">
-              <Phone size={16} className="text-saffron" /> {phone}
+          {leader.phone && (
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-800">
+              <Phone size={16} className="text-saffron" /> {leader.phone}
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

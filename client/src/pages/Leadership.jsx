@@ -2,25 +2,41 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import LeaderCard from '../components/LeaderCard';
 import LeaderIDModal from '../components/LeaderIDModal';
-import { LEADERS } from '../constants/data';
 import SEO from '../components/SEO';
 
 export default function Leadership() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedLeader, setSelectedLeader] = useState(null);
+  const [leaders, setLeaders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch leaders from MySQL Backend CMS
+  useEffect(() => {
+    fetch('/api/leaders')
+      .then(res => res.json())
+      .then(data => {
+        setLeaders(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch leaders:', err);
+        setLoading(false);
+      });
+  }, []);
 
   // Sync selectedLeader with URL param 'leader'
   useEffect(() => {
+    if (leaders.length === 0) return;
     const leaderParam = searchParams.get('leader');
     if (leaderParam) {
-      const exists = LEADERS.find(l => l.name === leaderParam);
+      const exists = leaders.find(l => l.name === leaderParam);
       if (exists) {
         setSelectedLeader(exists);
       }
     } else {
       setSelectedLeader(null);
     }
-  }, [searchParams]);
+  }, [searchParams, leaders]);
 
   const handleLeaderSelect = (leader) => {
     setSearchParams({ leader: leader.name });
@@ -36,7 +52,7 @@ export default function Leadership() {
         title={selectedLeader ? `${selectedLeader.name} | Leadership` : "Our Leadership"} 
         description={selectedLeader ? `View the official NGO profile of ${selectedLeader.name}, ${selectedLeader.role} at HinduVahini.` : "Meet the dedicated core members driving HinduVahini's vision of cultural preservation and community welfare."}
         url={selectedLeader ? `/leadership?leader=${encodeURIComponent(selectedLeader.name)}` : "/leadership"}
-        image={selectedLeader ? selectedLeader.image : undefined}
+        image={selectedLeader ? selectedLeader.image_url : undefined}
       />
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
@@ -46,9 +62,12 @@ export default function Leadership() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {LEADERS.map((leader, index) => (
-            <div key={index} className="animation-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+        {loading ? (
+          <div className="text-center py-20 text-gray-500">Loading Leadership...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {leaders.map((leader, index) => (
+            <div key={leader.id || index} className="animation-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
               <LeaderCard 
                 leader={leader} 
                 isVertical={true} 
@@ -56,7 +75,8 @@ export default function Leadership() {
               />
             </div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {selectedLeader && (

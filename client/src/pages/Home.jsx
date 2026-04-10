@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
@@ -12,12 +12,37 @@ import 'swiper/css/navigation';
 import LeaderCard from '../components/LeaderCard';
 import DonationModal from '../components/DonationModal';
 import SEO from '../components/SEO';
-import { LEADERS, GALLERY_IMAGES } from '../constants/data';
 
 export default function Home() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState('');
+  const [leaders, setLeaders] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [leadersRes, galleryRes] = await Promise.all([
+          fetch('/api/leaders'),
+          fetch('/api/gallery')
+        ]);
+        
+        const leadersData = await leadersRes.json();
+        const galleryData = await galleryRes.json();
+        
+        setLeaders(leadersData);
+        setGalleryImages(galleryData);
+      } catch (err) {
+        console.error('Home Page Data Fetch Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const openDonation = (amt = '') => {
     setSelectedAmount(amt);
@@ -77,7 +102,8 @@ export default function Home() {
 
       {/* National President Section */}
       {(() => {
-        const president = LEADERS.find(l => l.isPresident);
+        if (loading) return null;
+        const president = leaders.find(l => l.designation === 'President');
         if (!president) return null;
         
         return (
@@ -88,7 +114,7 @@ export default function Home() {
                   onClick={() => handleLeaderClick(president.name)}
                   className="relative rounded-[15px] overflow-hidden aspect-[3/4] border-[5px] border-white shadow-img animation-slide-up mx-auto w-full max-w-[280px] md:max-w-full cursor-pointer group"
                 >
-                  <img src={president.image} alt={president.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img src={president.image_url} alt={president.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
                        <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-xs">Verify Profile</span>
                   </div>
@@ -103,15 +129,14 @@ export default function Home() {
                     {president.bio}
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    {president.phones.map((phone, i) => (
+                    {president.phone && (
                       <a 
-                        key={i}
-                        href={`tel:${phone.replace(/\s+/g, '')}`} 
-                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-medium transition-colors shadow-md ${i === 0 ? 'bg-saffron text-white hover:bg-saffronLight' : 'bg-transparent border-2 border-saffron text-saffron hover:bg-saffron hover:text-white'}`}
+                        href={`tel:${president.phone.replace(/\s+/g, '')}`} 
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-full font-medium transition-colors shadow-md bg-saffron text-white hover:bg-saffronLight"
                       >
-                        <Phone weight="fill" /> {phone}
+                        <Phone weight="fill" /> {president.phone}
                       </a>
-                    ))}
+                    )}
                   </div>
                 </div>
               </div>
@@ -192,29 +217,31 @@ export default function Home() {
           <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-16">Guided by vision, driven by dharma and service.</p>
           
           <div className="mb-12">
-            <Swiper
-              modules={[Pagination, Navigation, Autoplay]}
-              spaceBetween={30}
-              slidesPerView={1}
-              pagination={{ clickable: true }}
-              navigation
-              autoplay={{ delay: 3500, disableOnInteraction: false }}
-              breakpoints={{
-                640: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 },
-              }}
-              className="px-4 py-12"
-            >
-              {LEADERS.map((leader, i) => (
-                <SwiperSlide key={i}>
-                  <LeaderCard 
-                    leader={leader} 
-                    isVertical={true} 
-                    onClick={() => handleLeaderClick(leader.name)}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            {!loading && leaders.length > 0 && (
+              <Swiper
+                modules={[Pagination, Navigation, Autoplay]}
+                spaceBetween={30}
+                slidesPerView={1}
+                pagination={{ clickable: true }}
+                navigation
+                autoplay={{ delay: 3500, disableOnInteraction: false }}
+                breakpoints={{
+                  640: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                }}
+                className="px-4 py-12"
+              >
+                {leaders.map((leader, i) => (
+                  <SwiperSlide key={leader.id || i}>
+                    <LeaderCard 
+                      leader={leader} 
+                      isVertical={true} 
+                      onClick={() => handleLeaderClick(leader.name)}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
           </div>
 
           <Link to="/leadership" className="inline-flex items-center gap-2 bg-transparent border-2 border-saffron text-saffron px-10 py-4 rounded-full font-bold hover:bg-saffron hover:text-white transition-all transform hover:-translate-y-1 shadow-md hover:shadow-lg">
@@ -258,13 +285,13 @@ export default function Home() {
           <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-16">Glimpses of our recent community gatherings and cultural initiatives.</p>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16 px-2">
-            {GALLERY_IMAGES.slice(0, 5).map((img, i) => (
+            {!loading && galleryImages.slice(0, 5).map((img, i) => (
               <div 
-                key={i} 
-                onClick={() => navigate(`/gallery?img=${encodeURIComponent(img.src)}`)}
-                className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} group cursor-pointer`}
+                key={img.id || i} 
+                onClick={() => navigate(`/gallery?img=${encodeURIComponent(img.image_url)}`)}
+                className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span_classes} group cursor-pointer`}
               >
-                <img src={img.src} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <img src={img.image_url} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
                   <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-xs">View Full Size</span>
                 </div>

@@ -26,6 +26,7 @@ app.use('/api/admin', require('./routes/admin'));
 
 // Static Resource Serving
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // SPA Catch-all Route with Dynamic OG Tag Injection
 // Using Regex Pattern to avoid interfering with /api routes
@@ -67,15 +68,15 @@ app.get(/^(?!\/api).*/, (req, res) => {
             
             // Simple mapping for OG previews without full cross-project imports
             const leaderImages = {
-                "Ashwani Mishra": "/upload/leaders_img/ashwani_mishra.jpg",
-                "Anand Tiwari": "/upload/leaders_img/anand_tiwari.jpeg",
-                "Vimal Mishra": "/upload/leaders_img/vimal_mishra.jpeg",
-                "Ruchin Sharma": "/upload/leaders_img/ruchin_sharma.jpeg",
-                "Surendra Kumar": "/upload/leaders_img/surendra_kumar.jpeg",
-                "Akshay Sharma": "/upload/leaders_img/akshay_sharma.jpeg",
-                "Akhilesh Dwivedi": "/upload/leaders_img/akhilesh_dviwedi.jpeg",
-                "Dayanand": "/upload/leaders_img/dayanand.jpeg",
-                "Karan Singh": "/upload/leaders_img/karan_singh.jpeg"
+                "Ashwani Mishra": "/uploads/leaders_img/ashwani_mishra.jpg",
+                "Anand Tiwari": "/uploads/leaders_img/anand_tiwari.jpeg",
+                "Vimal Mishra": "/uploads/leaders_img/vimal_mishra.jpeg",
+                "Ruchin Sharma": "/uploads/leaders_img/ruchin_sharma.jpeg",
+                "Surendra Kumar": "/uploads/leaders_img/surendra_kumar.jpeg",
+                "Akshay Sharma": "/uploads/leaders_img/akshay_sharma.jpeg",
+                "Akhilesh Dwivedi": "/uploads/leaders_img/akhilesh_dviwedi.jpeg",
+                "Dayanand": "/uploads/leaders_img/dayanand.jpeg",
+                "Karan Singh": "/uploads/leaders_img/karan_singh.jpeg"
             };
 
             const imgPath = leaderImages[leaderName] || "/logo.png";

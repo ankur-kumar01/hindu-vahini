@@ -19,7 +19,8 @@ export default function LeaderIDModal({ leader, onClose }) {
   if (!leader) return null;
 
   // Generate a mock ID number based on the name length and some random bits
-  const memberId = `HV-${leader.name.length}${leader.phones[0].slice(-2)}-${leader.isPresident ? '01' : '02'}`;
+  const phoneSuffix = leader.phone ? leader.phone.slice(-2) : '00';
+  const memberId = `HV-${leader.name.length}${phoneSuffix}-${leader.designation === 'President' ? '01' : '02'}`;
   
   const shareUrl = `${window.location.origin}/leadership?leader=${encodeURIComponent(leader.name)}`;
   const shareText = `Check out the profile of ${leader.name} (${leader.role}) from HinduVahini: `;
@@ -69,7 +70,7 @@ export default function LeaderIDModal({ leader, onClose }) {
                 {/* Profile Photo */}
                 <div className="relative mb-6">
                     <div className="w-40 h-40 rounded-full border-[6px] border-white shadow-lg overflow-hidden ring-1 ring-saffron/10">
-                        <img src={leader.image} alt={leader.name} className="w-full h-full object-cover" />
+                        <img src={leader.image_url} alt={leader.name} className="w-full h-full object-cover" />
                     </div>
                 </div>
 
@@ -86,10 +87,10 @@ export default function LeaderIDModal({ leader, onClose }) {
                              <span className="text-[10px] font-bold uppercase tracking-tighter opacity-60">Membership ID</span>
                              <span className="text-xs font-mono font-bold text-dark">{memberId}</span>
                         </div>
-                        {leader.phones.length > 0 && (
+                        {leader.phone && (
                             <div className="flex items-center justify-center gap-2 text-gray-500">
                                 <Phone size={18} weight="duotone" className="text-saffron" />
-                                <span className="text-xs font-bold text-dark">{leader.phones[0]}</span>
+                                <span className="text-xs font-bold text-dark">{leader.phone}</span>
                             </div>
                         )}
                     </div>

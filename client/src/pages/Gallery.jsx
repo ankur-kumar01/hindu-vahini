@@ -1,26 +1,44 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import { GALLERY_IMAGES } from '../constants/data';
 import SEO from '../components/SEO';
 import ImageModal from '../components/ImageModal';
 
 export default function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedImage, setSelectedImage] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
   const itemsPerPage = 8;
   const currentPage = parseInt(searchParams.get('page')) || 1;
-  const totalPages = Math.ceil(GALLERY_IMAGES.length / itemsPerPage);
-  const validPage = Math.max(1, Math.min(currentPage, totalPages));
+
+  // Fetch Gallery from Backend
+  useEffect(() => {
+    fetch('/api/gallery')
+      .then(res => res.json())
+      .then(data => {
+        setGalleryImages(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch gallery:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  const totalPages = Math.ceil(galleryImages.length / itemsPerPage);
+  const validPage = Math.max(1, Math.min(currentPage, totalPages || 1));
 
   // Sync selectedImage with URL param 'img'
   useEffect(() => {
+    if (galleryImages.length === 0) return;
     const imgParam = searchParams.get('img');
     if (imgParam) {
-      const exists = GALLERY_IMAGES.find(i => i.src === imgParam);
+      const exists = galleryImages.find(i => i.image_url === imgParam);
       if (exists) {
         setSelectedImage(imgParam);
-        const imgIndex = GALLERY_IMAGES.findIndex(i => i.src === imgParam);
+        const imgIndex = galleryImages.findIndex(i => i.image_url === imgParam);
         const imgPage = Math.floor(imgIndex / itemsPerPage) + 1;
         if (imgPage !== validPage) {
           setSearchParams(prev => {
@@ -32,7 +50,7 @@ export default function Gallery() {
     } else {
       setSelectedImage(null);
     }
-  }, [searchParams, validPage]);
+  }, [searchParams, galleryImages, validPage]);
 
   const handleSelectImage = (src) => {
     setSearchParams(prev => {
@@ -58,7 +76,7 @@ export default function Gallery() {
 
   const indexOfLastItem = validPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = GALLERY_IMAGES.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = galleryImages.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="pt-32 pb-24 bg-light min-h-screen">
@@ -75,21 +93,25 @@ export default function Gallery() {
          </div>
          
          {/* Gallery Grid */}
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16 px-2">
-           {currentItems.map((img, i) => (
-             <div 
-               key={i} 
-               onClick={() => handleSelectImage(img.src)}
-               className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} animation-slide-up group cursor-pointer`} 
-               style={{ animationDelay: `${(i % itemsPerPage) * 0.1}s` }}
-             >
-               <img src={img.src} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-               <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                 <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-sm">View Full Size</span>
+         {loading ? (
+           <div className="text-center py-20 text-gray-400">Loading Gallery...</div>
+         ) : (
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16 px-2">
+             {currentItems.map((img, i) => (
+               <div 
+                 key={img.id || i} 
+                 onClick={() => handleSelectImage(img.image_url)}
+                 className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span_classes} animation-slide-up group cursor-pointer`} 
+                 style={{ animationDelay: `${(i % itemsPerPage) * 0.1}s` }}
+               >
+                 <img src={img.image_url} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                 <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                   <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-sm">View Full Size</span>
+                 </div>
                </div>
-             </div>
-           ))}
-         </div>
+             ))}
+           </div>
+         )}
 
          {/* Pagination Controls */}
          {totalPages > 1 && (

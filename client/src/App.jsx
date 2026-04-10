@@ -12,6 +12,8 @@ import AdminLogin from './admin/AdminLogin';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminHome from './admin/AdminHome';
 import AdminQueries from './admin/AdminQueries';
+import AdminLeaders from './admin/AdminLeaders';
+import AdminGallery from './admin/AdminGallery';
 import AdminProfile from './admin/AdminProfile';
 import AdminChangePassword from './admin/AdminChangePassword';
 
@@ -34,6 +36,12 @@ function App() {
         </Route>
         <Route path="/admin/queries" element={<AdminDashboard />}>
           <Route index element={<AdminQueries />} />
+        </Route>
+        <Route path="/admin/leaders" element={<AdminDashboard />}>
+          <Route index element={<AdminLeaders />} />
+        </Route>
+        <Route path="/admin/gallery" element={<AdminDashboard />}>
+          <Route index element={<AdminGallery />} />
         </Route>
         <Route path="/admin/profile" element={<AdminDashboard />}>
           <Route index element={<AdminProfile />} />
