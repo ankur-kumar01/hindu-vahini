@@ -16,10 +16,10 @@ export const LEADERS = [
   },
   {
     name: "Vimal Mishra",
-    role: "Rashtriya Prabhari — HinduVahini",
+    role: "Rashtriya Mahasachiv — HinduVahini",
     bio: "Shri Vimal Mishra ji guides the strategic initiatives and organizational expansion.",
     image: "/upload/leaders_img/vimal_mishra.jpeg",
-    phones: ["+91 80905 84363"]
+    phones: ["+91 9415643345"]
   },
   {
     name: "Ruchin Sharma",
