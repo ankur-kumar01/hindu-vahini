@@ -25,9 +25,8 @@ export default function Footer() {
         <div>
           <h4 className="text-white text-xl font-heading font-semibold mb-6 relative pb-3 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-saffron">Quick Links</h4>
           <ul className="flex flex-col gap-3">
-            <li><Link to="/" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Home</Link></li>
-            <li><a href="/#about" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">About Us</a></li>
-            <li><a href="/#initiatives" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Our Initiatives</a></li>
+            <li><Link to="/leadership" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Leadership</Link></li>
+            <li><Link to="/gallery" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Gallery</Link></li>
             <li><Link to="/donate" className="hover:text-saffron hover:translate-x-1 transition-all inline-block">Donate</Link></li>
           </ul>
         </div>

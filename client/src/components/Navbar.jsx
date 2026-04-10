@@ -23,6 +23,8 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Home', path: '/', isHash: false },
+    { name: 'Leadership', path: '/leadership', isHash: false },
+    { name: 'Gallery', path: '/gallery', isHash: false },
     { name: 'About', path: '/#about', isHash: true },
     { name: 'Initiatives', path: '/#initiatives', isHash: true },
     { name: 'Contact', path: '/#contact', isHash: true },
@@ -49,13 +51,23 @@ export default function Navbar() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.path} 
-              className={`font-medium hover:text-saffron transition-colors ${isSolid ? 'text-gray-800' : 'text-white/90'}`}
-            >
-              {link.name}
-            </a>
+            link.isHash ? (
+              <a 
+                key={link.name} 
+                href={link.path} 
+                className={`font-medium hover:text-saffron transition-colors ${isSolid ? 'text-gray-800' : 'text-white/90'}`}
+              >
+                {link.name}
+              </a>
+            ) : (
+              <Link 
+                key={link.name} 
+                to={link.path} 
+                className={`font-medium hover:text-saffron transition-colors ${isSolid ? 'text-gray-800' : 'text-white/90'}`}
+              >
+                {link.name}
+              </Link>
+            )
           ))}
           <Link to="/donate" className={`font-medium border-2 rounded-full px-6 py-2.5 transition-colors ${isSolid ? 'border-saffron text-saffron hover:bg-saffron hover:text-white' : 'border-white/50 text-white hover:border-white hover:bg-white/10'}`}>Donate</Link>
           <Link to="/join-us" className="font-medium bg-saffron text-white rounded-full px-8 py-2.5 shadow-md hover:bg-saffronLight hover:-translate-y-0.5 transition-all">Join Us</Link>
@@ -81,15 +93,27 @@ export default function Navbar() {
           
           <nav className="p-8 flex flex-col gap-6">
             {navLinks.map((link) => (
-              <a 
-                key={link.name} 
-                href={link.path} 
-                onClick={() => setIsMenuOpen(false)}
-                className="text-lg font-semibold text-gray-800 hover:text-saffron transition-colors flex items-center justify-between"
-              >
-                {link.name}
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
-              </a>
+              link.isHash ? (
+                <a 
+                  key={link.name} 
+                  href={link.path} 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-lg font-semibold text-gray-800 hover:text-saffron transition-colors flex items-center justify-between"
+                >
+                  {link.name}
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+                </a>
+              ) : (
+                <Link 
+                  key={link.name} 
+                  to={link.path} 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-lg font-semibold text-gray-800 hover:text-saffron transition-colors flex items-center justify-between"
+                >
+                  {link.name}
+                  <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+                </Link>
+              )
             ))}
             <Link 
               to="/donate" 
