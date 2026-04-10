@@ -27,13 +27,21 @@ app.use('/api', require('./routes/api'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // SPA Catch-all Route with Dynamic OG Tag Injection
-app.get('*', (req, res) => {
-    const indexPath = path.join(__dirname, 'public', 'index.html');
+// Using Regex Pattern to avoid interfering with /api routes
+app.get(/^(?!\/api).*/, (req, res) => {
+    const indexPath = path.resolve(__dirname, 'public', 'index.html');
     
     // For Gallery sharing with specific images, inject meta tags for social previews
     if (req.path === '/gallery' && req.query.img) {
+        if (!fs.existsSync(indexPath)) {
+            return res.status(404).send('Site content not found. Please run build.');
+        }
+
         fs.readFile(indexPath, 'utf8', (err, data) => {
-            if (err) return res.sendFile(indexPath);
+            if (err) {
+                console.error('Error reading index.html:', err);
+                return res.sendFile(indexPath);
+            }
 
             const img = req.query.img;
             const siteUrl = "https://hinduvahini.online";
@@ -44,16 +52,19 @@ app.get('*', (req, res) => {
                 <meta property="og:description" content="View this special moment from our community journey." />
                 <meta property="og:image" content="${fullImgUrl}" />
                 <meta property="og:url" content="${siteUrl}${req.originalUrl}" />
-                <meta property="og:type" content="website" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:image" content="${fullImgUrl}" />
             `;
             
+            // Inject after <head>
             const updatedHtml = data.replace('<head>', `<head>${metaTags}`);
-            return res.send(updatedHtml);
+            res.send(updatedHtml);
         });
     } else {
-        res.sendFile(indexPath);
+        // Normal SPA routing
+        if (fs.existsSync(indexPath)) {
+            res.sendFile(indexPath);
+        } else {
+            res.status(404).send('Requested resource not found.');
+        }
     }
 });
 
