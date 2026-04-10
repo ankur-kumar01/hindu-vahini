@@ -8,23 +8,57 @@ import ImageModal from '../components/ImageModal';
 export default function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedImage, setSelectedImage] = useState(null);
-  const currentPage = parseInt(searchParams.get('page')) || 1;
   const itemsPerPage = 8;
-  
-  // Calculate pagination
+  const currentPage = parseInt(searchParams.get('page')) || 1;
   const totalPages = Math.ceil(GALLERY_IMAGES.length / itemsPerPage);
-  
-  // Ensure currentPage is within valid range
   const validPage = Math.max(1, Math.min(currentPage, totalPages));
-  
+
+  // Sync selectedImage with URL param 'img'
+  useEffect(() => {
+    const imgParam = searchParams.get('img');
+    if (imgParam) {
+      const exists = GALLERY_IMAGES.find(i => i.src === imgParam);
+      if (exists) {
+        setSelectedImage(imgParam);
+        const imgIndex = GALLERY_IMAGES.findIndex(i => i.src === imgParam);
+        const imgPage = Math.floor(imgIndex / itemsPerPage) + 1;
+        if (imgPage !== validPage) {
+          setSearchParams(prev => {
+            prev.set('page', imgPage);
+            return prev;
+          }, { replace: true });
+        }
+      }
+    } else {
+      setSelectedImage(null);
+    }
+  }, [searchParams, validPage]);
+
+  const handleSelectImage = (src) => {
+    setSearchParams(prev => {
+      prev.set('img', src);
+      return prev;
+    });
+  };
+
+  const handleCloseImage = () => {
+    setSearchParams(prev => {
+      prev.delete('img');
+      return prev;
+    });
+  };
+
+  const paginate = (pageNumber) => {
+    setSearchParams(prev => {
+      prev.set('page', pageNumber);
+      return prev;
+    });
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  };
+
   const indexOfLastItem = validPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = GALLERY_IMAGES.slice(indexOfFirstItem, indexOfLastItem);
-
-  const paginate = (pageNumber) => {
-    setSearchParams({ page: pageNumber });
-    window.scrollTo({ top: 400, behavior: 'smooth' }); // Scroll into grid area
-  };
 
   return (
     <div className="pt-32 pb-24 bg-light min-h-screen">
@@ -40,11 +74,11 @@ export default function Gallery() {
          </div>
          
          {/* Gallery Grid */}
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16">
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16 px-2">
            {currentItems.map((img, i) => (
              <div 
                key={i} 
-               onClick={() => setSelectedImage(img.src)}
+               onClick={() => handleSelectImage(img.src)}
                className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} animation-slide-up group cursor-pointer`} 
                style={{ animationDelay: `${(i % itemsPerPage) * 0.1}s` }}
              >
@@ -93,7 +127,7 @@ export default function Gallery() {
          {selectedImage && (
            <ImageModal 
              image={selectedImage} 
-             onClose={() => setSelectedImage(null)} 
+             onClose={handleCloseImage} 
            />
          )}
        </div>

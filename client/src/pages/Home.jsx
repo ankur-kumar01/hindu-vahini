@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
 import { CheckCircle, UsersThree, FlowerLotus, Books, HandHeart, UsersFour, CrownSimple, Phone, Images } from '@phosphor-icons/react';
@@ -11,14 +11,13 @@ import 'swiper/css/navigation';
 
 import LeaderCard from '../components/LeaderCard';
 import DonationModal from '../components/DonationModal';
-import ImageModal from '../components/ImageModal';
 import SEO from '../components/SEO';
 import { LEADERS, GALLERY_IMAGES } from '../constants/data';
 
 export default function Home() {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
 
   const openDonation = (amt = '') => {
     setSelectedAmount(amt);
@@ -35,7 +34,6 @@ export default function Home() {
       
       {/* Hero Section - Restored to original aesthetics */}
       <section id="home" className="relative flex items-center justify-center min-h-[95vh] text-center px-6 overflow-hidden pt-20">
-        {/* Background Layer with Animation */}
         <div className="absolute inset-[-5%] z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-dark/95 to-dark/85 z-10"></div>
           <div className="absolute inset-0 hero-radial-gradient z-20"></div>
@@ -249,7 +247,7 @@ export default function Home() {
             {GALLERY_IMAGES.slice(0, 5).map((img, i) => (
               <div 
                 key={i} 
-                onClick={() => setSelectedImage(img.src)}
+                onClick={() => navigate(`/gallery?img=${encodeURIComponent(img.src)}`)}
                 className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} group cursor-pointer`}
               >
                 <img src={img.src} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -271,14 +269,6 @@ export default function Home() {
           isOpen={isModalOpen} 
           onClose={() => setIsModalOpen(false)} 
           initialAmount={selectedAmount} 
-        />
-      )}
-
-      {/* Image Modal */}
-      {selectedImage && (
-        <ImageModal 
-          image={selectedImage}
-          onClose={() => setSelectedImage(null)}
         />
       )}
     </div>
