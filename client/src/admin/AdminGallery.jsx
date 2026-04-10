@@ -15,6 +15,10 @@ const AdminGallery = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 18;
+
   useEffect(() => {
     fetchGallery();
   }, []);
@@ -135,27 +139,65 @@ const AdminGallery = () => {
           <p className="text-gray-500">The gallery is currently empty.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {images.map((img) => (
-            <div key={img.id} className="group relative bg-white/5 rounded-2xl border border-white/10 overflow-hidden aspect-square transition-all hover:border-saffron/30">
-              <img src={img.image_url} alt="Gallery item" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              
-              {/* Badge for span type */}
-              <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded-md text-[9px] font-bold text-gray-400 uppercase tracking-widest border border-white/5">
-                 {img.span_classes.split(' ')[0]}
-              </div>
+        <div className="space-y-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {images.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((img) => (
+              <div key={img.id} className="group relative bg-white/5 rounded-2xl border border-white/10 overflow-hidden aspect-square transition-all hover:border-saffron/30">
+                <img src={img.image_url} alt="Gallery item" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                
+                {/* Badge for span type */}
+                <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded-md text-[9px] font-bold text-gray-400 uppercase tracking-widest border border-white/5">
+                   {img.span_classes.split(' ')[0]}
+                </div>
 
-              {/* Overlay Actions */}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                 <button 
-                    onClick={() => handleDelete(img.id)}
-                    className="p-3 bg-red-500/80 hover:bg-red-500 text-white rounded-2xl transition-all hover:scale-110 shadow-lg"
-                 >
-                    <Trash size={22} weight="bold" />
-                 </button>
+                {/* Overlay Actions */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                   <button 
+                      onClick={() => handleDelete(img.id)}
+                      className="p-3 bg-red-500/80 hover:bg-red-500 text-white rounded-2xl transition-all hover:scale-110 shadow-lg"
+                   >
+                      <Trash size={22} weight="bold" />
+                   </button>
+                </div>
               </div>
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          {images.length > itemsPerPage && (
+            <div className="flex items-center justify-between gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
+               <p className="text-xs text-gray-500">
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, images.length)} of {images.length} images
+               </p>
+               <div className="flex items-center gap-2">
+                  <button 
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
+                    className="px-4 py-2 bg-white/5 disabled:opacity-30 text-gray-300 rounded-xl text-xs font-bold hover:bg-white/10 transition-all border border-white/5"
+                  >
+                    Previous
+                  </button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.ceil(images.length / itemsPerPage) }, (_, i) => (
+                       <button
+                          key={i+1}
+                          onClick={() => setCurrentPage(i + 1)}
+                          className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-saffron text-white shadow-lg shadow-saffron/20' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'}`}
+                       >
+                          {i + 1}
+                       </button>
+                    ))}
+                  </div>
+                  <button 
+                    disabled={currentPage === Math.ceil(images.length / itemsPerPage)}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                    className="px-4 py-2 bg-white/5 disabled:opacity-30 text-gray-300 rounded-xl text-xs font-bold hover:bg-white/10 transition-all border border-white/5"
+                  >
+                    Next
+                  </button>
+               </div>
             </div>
-          ))}
+          )}
         </div>
       )}
 

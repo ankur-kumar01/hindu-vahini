@@ -5,9 +5,14 @@ import { Users, Plus, PencilSimple, Trash, X, UploadSimple, Phone, Identificatio
 const AdminLeaders = () => {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingLeader, setEditingLeader] = useState(null);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   
   // Form State
   const [formData, setFormData] = useState({
@@ -26,12 +31,15 @@ const AdminLeaders = () => {
   }, []);
 
   const fetchLeaders = async () => {
+    console.log('Fetching leaders from API...');
     try {
       const response = await fetch('/api/leaders');
       if (!response.ok) throw new Error('Failed to fetch leaders');
       const data = await response.json();
+      console.log('Leaders fetched successfully:', data.length);
       setLeaders(data);
     } catch (err) {
+      console.error('Fetch error:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -97,7 +105,15 @@ const AdminLeaders = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Starting Leader Save operation...', editingLeader ? 'UPDATE' : 'CREATE');
+    setSubmitting(true);
+    
     const token = localStorage.getItem('admin_token');
+    if (!token) {
+        alert('Authentication token missing. Please log in again.');
+        setSubmitting(false);
+        return;
+    }
     
     const data = new FormData();
     Object.keys(formData).forEach(key => data.append(key, formData[key]));
@@ -113,12 +129,21 @@ const AdminLeaders = () => {
         body: data
       });
 
-      if (!response.ok) throw new Error('Operation failed');
+      const result = await response.json();
+
+      if (!response.ok) {
+          console.error('Server error during save:', result);
+          throw new Error(result.error || 'Operation failed');
+      }
       
+      console.log('Leader saved successfully:', result);
       setShowModal(false);
       fetchLeaders(); // Refresh list
     } catch (err) {
-      alert(err.message);
+      console.error('Submit exception:', err.message);
+      alert('Save Error: ' + err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -166,7 +191,7 @@ const AdminLeaders = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {leaders.map((leader) => (
+                {leaders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((leader) => (
                   <tr key={leader.id} className="hover:bg-white/5 transition-colors group">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -216,6 +241,40 @@ const AdminLeaders = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination Controls */}
+            {leaders.length > itemsPerPage && (
+              <div className="p-4 border-t border-white/5 flex items-center justify-between gap-4">
+                 <p className="text-xs text-gray-500">
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, leaders.length)} of {leaders.length} leaders
+                 </p>
+                 <div className="flex items-center gap-2">
+                    <button 
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(prev => prev - 1)}
+                      className="px-3 py-1.5 bg-white/5 disabled:opacity-30 text-gray-300 rounded-lg text-xs font-bold hover:bg-white/10 transition-all"
+                    >
+                      Previous
+                    </button>
+                    {Array.from({ length: Math.ceil(leaders.length / itemsPerPage) }, (_, i) => (
+                       <button
+                          key={i+1}
+                          onClick={() => setCurrentPage(i + 1)}
+                          className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-saffron text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'}`}
+                       >
+                          {i + 1}
+                       </button>
+                    ))}
+                    <button 
+                      disabled={currentPage === Math.ceil(leaders.length / itemsPerPage)}
+                      onClick={() => setCurrentPage(prev => prev + 1)}
+                      className="px-3 py-1.5 bg-white/5 disabled:opacity-30 text-gray-300 rounded-lg text-xs font-bold hover:bg-white/10 transition-all"
+                    >
+                      Next
+                    </button>
+                 </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -223,7 +282,7 @@ const AdminLeaders = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !submitting && setShowModal(false)}></div>
           <div className="relative w-full max-w-2xl bg-[#1a1a1a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animation-scale-in">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
@@ -233,6 +292,7 @@ const AdminLeaders = () => {
               </h2>
               <button 
                 onClick={() => setShowModal(false)}
+                disabled={submitting}
                 className="p-2 text-gray-500 hover:text-white hover:bg-white/5 rounded-xl transition-all"
               >
                 <X size={20} />
@@ -258,6 +318,7 @@ const AdminLeaders = () => {
                     type="file" 
                     onChange={handleImageChange}
                     accept="image/*"
+                    disabled={submitting}
                     className="absolute inset-0 opacity-0 cursor-pointer"
                   />
                   <div className="absolute -bottom-2 -right-2 bg-saffron text-white p-2 rounded-xl shadow-lg pointer-events-none group-hover:scale-110 transition-transform">
@@ -273,6 +334,7 @@ const AdminLeaders = () => {
                   <input 
                     type="text" 
                     required
+                    disabled={submitting}
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     placeholder="e.g., Ashwani Mishra"
@@ -284,6 +346,7 @@ const AdminLeaders = () => {
                   <input 
                     type="text" 
                     required
+                    disabled={submitting}
                     value={formData.designation}
                     onChange={(e) => setFormData({...formData, designation: e.target.value})}
                     placeholder="e.g., Rashtriya Adhyaksh"
@@ -295,6 +358,7 @@ const AdminLeaders = () => {
                   <input 
                     type="text" 
                     required
+                    disabled={submitting}
                     value={formData.role}
                     onChange={(e) => setFormData({...formData, role: e.target.value})}
                     placeholder="e.g., Central Committee Member"
@@ -305,6 +369,7 @@ const AdminLeaders = () => {
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Phone Number</label>
                   <input 
                     type="text" 
+                    disabled={submitting}
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     placeholder="e.g., +91 99999 00000"
@@ -317,6 +382,7 @@ const AdminLeaders = () => {
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Biography / Description</label>
                 <textarea 
                   rows="3"
+                  disabled={submitting}
                   value={formData.bio}
                   onChange={(e) => setFormData({...formData, bio: e.target.value})}
                   placeholder="Tell us about the leader's contributions and vision..."
@@ -328,6 +394,7 @@ const AdminLeaders = () => {
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Display Priority Order</label>
                 <input 
                   type="number" 
+                  disabled={submitting}
                   value={formData.display_order}
                   onChange={(e) => setFormData({...formData, display_order: e.target.value})}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-saffron/50 transition-all font-medium"
@@ -339,6 +406,7 @@ const AdminLeaders = () => {
               <div className="flex items-center gap-3 pt-4">
                 <button 
                   type="button" 
+                  disabled={submitting}
                   onClick={() => setShowModal(false)}
                   className="flex-1 bg-white/5 hover:bg-white/10 text-white font-bold py-3.5 rounded-2xl transition-all active:scale-[0.98]"
                 >
@@ -346,9 +414,17 @@ const AdminLeaders = () => {
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-[2] bg-saffron hover:bg-saffron/90 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-saffron/20 active:scale-[0.98]"
+                  disabled={submitting}
+                  className="flex-[2] bg-saffron hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-saffron/20 active:scale-[0.98] flex items-center justify-center gap-2"
                 >
-                  {editingLeader ? 'Update Profile' : 'Save Leader'}
+                  {submitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    editingLeader ? 'Update Profile' : 'Save Leader'
+                  )}
                 </button>
               </div>
             </form>
