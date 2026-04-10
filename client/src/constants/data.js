@@ -62,6 +62,14 @@ export const LEADERS = [
     bio: "Dedicated to the organizational mission and cultural outreach.",
     image: "/upload/leaders_img/karan_singh.jpeg",
     phones: ["+91 8053906786"]
+  },
+
+  {
+    name: "Vijay Nandan",
+    role: "Pardesh Adhyaksh Bihar — HinduVahini",
+    bio: "Dedicated to the organizational mission and cultural outreach.",
+    image: "/upload/leaders_img/vijay_nandan.jpeg",
+    phones: ["+91 8002104335"]
   }
 ];
 

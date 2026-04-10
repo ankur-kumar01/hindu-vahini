@@ -59,18 +59,18 @@ export default function Home() {
             Join us in our mission to protect heritage, foster unity, advance education, and create lasting social impact.
           </p>
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-            <button 
-              onClick={() => openDonation()} 
-              className="bg-saffron text-white px-10 py-4 rounded-full font-bold hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-[0_4px_15px_rgba(255,153,51,0.3)]"
+            <Link 
+              to="/leadership" 
+              className="bg-saffron text-white px-10 py-4 rounded-full font-bold hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-[0_4px_15px_rgba(255,153,51,0.3)] text-center"
             >
-              Donate Now
-            </button>
-            <a 
-              href="#about" 
-              className="bg-transparent border-2 border-white/50 text-white px-10 py-[14px] rounded-full font-bold hover:bg-white hover:text-dark hover:border-white hover:-translate-y-1 transition-all w-full sm:w-auto"
+              Our Team
+            </Link>
+            <Link 
+              to="/gallery" 
+              className="bg-transparent border-2 border-white/50 text-white px-10 py-[14px] rounded-full font-bold hover:bg-white hover:text-dark hover:border-white hover:-translate-y-1 transition-all w-full sm:w-auto text-center"
             >
-              Discover Our Mission
-            </a>
+              View Gallery
+            </Link>
           </div>
         </div>
       </section>
