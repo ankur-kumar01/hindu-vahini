@@ -81,5 +81,10 @@ export const GALLERY_IMAGES = [
   { src: "/upload/gallery_img/g13.jpeg", span: "row-span-2 col-span-1" },
   { src: "/upload/gallery_img/g14.jpeg", span: "row-span-1 col-span-1" },
   { src: "/upload/gallery_img/g15.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g16.jpeg", span: "row-span-2 col-span-1" },
+  { src: "/upload/gallery_img/g17.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g18.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g19.jpeg", span: "row-span-1 col-span-2 md:col-span-1" },
+  { src: "/upload/gallery_img/g20.jpeg", span: "row-span-1 col-span-1" },
   { src: "/upload/gallery_img/g5.jpeg", span: "row-span-1 col-span-1" },
 ];
