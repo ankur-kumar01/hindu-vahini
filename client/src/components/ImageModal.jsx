@@ -4,11 +4,15 @@ import { useEffect } from 'react';
 export default function ImageModal({ image, onClose }) {
   // Prevent scrolling when modal is open
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    if (image) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, []);
+  }, [image]);
 
   if (!image) return null;
 

@@ -1,8 +1,19 @@
 import { QRCodeCanvas } from 'qrcode.react';
 import { X, Check, Copy } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function DonationModal({ isOpen, onClose, initialAmount }) {
+  // Prevent scrolling when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
   const [amount, setAmount] = useState(initialAmount || '');
   const [copied, setCopied] = useState(false);
   const upiId = "9935568569m@pnb";

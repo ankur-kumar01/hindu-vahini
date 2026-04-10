@@ -266,16 +266,21 @@ export default function Home() {
         </div>
       </section>
 
-      <DonationModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        initialAmount={selectedAmount} 
-      />
+      {isModalOpen && (
+        <DonationModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          initialAmount={selectedAmount} 
+        />
+      )}
 
-      <ImageModal 
-        image={selectedImage}
-        onClose={() => setSelectedImage(null)}
-      />
+      {/* Image Modal */}
+      {selectedImage && (
+        <ImageModal 
+          image={selectedImage}
+          onClose={() => setSelectedImage(null)}
+        />
+      )}
     </div>
   );
 }

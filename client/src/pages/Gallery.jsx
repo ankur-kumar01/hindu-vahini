@@ -90,10 +90,12 @@ export default function Gallery() {
          )}
 
          {/* Image Modal */}
-         <ImageModal 
-           image={selectedImage} 
-           onClose={() => setSelectedImage(null)} 
-         />
+         {selectedImage && (
+           <ImageModal 
+             image={selectedImage} 
+             onClose={() => setSelectedImage(null)} 
+           />
+         )}
        </div>
     </div>
   );
