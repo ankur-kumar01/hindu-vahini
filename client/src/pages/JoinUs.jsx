@@ -4,6 +4,8 @@ import SEO from '../components/SEO';
 
 export default function JoinUs() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,11 +15,30 @@ export default function JoinUs() {
     message: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate form submission
-    console.log('Membership Application:', formData);
-    setSubmitted(true);
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        setError(data.error || 'Something went wrong. Please try again.');
+        setLoading(false);
+      }
+    } catch (err) {
+      setError('Connection refused. Please ensure the server is running.');
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -152,6 +173,12 @@ export default function JoinUs() {
             </div>
             
             <form onSubmit={handleSubmit} className="p-8 md:p-10 space-y-5">
+              {error && (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-gray-400">Full Name</label>
                 <input 
@@ -235,9 +262,10 @@ export default function JoinUs() {
 
               <button 
                 type="submit"
-                className="w-full bg-dark text-white py-4 rounded-xl font-bold shadow-xl hover:bg-dark/90 active:scale-95 transition-all text-lg mt-4"
+                disabled={loading}
+                className={`w-full bg-dark text-white py-4 rounded-xl font-bold shadow-xl transition-all text-lg mt-4 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-dark/90 active:scale-95'}`}
               >
-                Submit Application
+                {loading ? 'Submitting Application...' : 'Submit Application'}
               </button>
 
               <p className="text-[10px] text-gray-400 text-center leading-relaxed">

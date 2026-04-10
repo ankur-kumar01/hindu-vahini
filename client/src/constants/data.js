@@ -29,10 +29,10 @@ export const LEADERS = [
     phones: ["+91 84291 00010"]
   },
   {
-    name: "Surendra Chauhan",
+    name: "Surendra Kumar",
     role: "Sah-Sashastra Pramukh — HinduVahini",
-    bio: "Shri Surendra Chauhan ji coordinates security and discipline across statewide events.",
-    image: "/upload/leaders_img/surendra_chauhan.jpeg",
+    bio: "Shri Surendra Kumar ji coordinates security and discipline across statewide events.",
+    image: "/upload/leaders_img/surendra_kumar.jpeg",
     phones: ["+91 96515 28882"]
   },
   {
@@ -41,6 +41,27 @@ export const LEADERS = [
     bio: "Shri Akhilesh Dwivedi ji represents core organizational viewpoints in significant assemblies.",
     image: "/upload/leaders_img/akhilesh_dwivedi.jpeg",
     phones: ["+91 63935 91931"]
+  },
+  {
+    name: "Akshay Sharma",
+    role: "Core Member — HinduVahini",
+    bio: "Shri Akshay Sharma ji is dedicated to the organizational mission and cultural outreach.",
+    image: "/upload/leaders_img/akshay_sharma.jpeg",
+    phones: []
+  },
+  {
+    name: "Dayanand",
+    role: "Core Member — HinduVahini",
+    bio: "Dedicated to the organizational mission and cultural outreach.",
+    image: "/upload/leaders_img/dayanand.jpeg",
+    phones: []
+  },
+  {
+    name: "Karan Singh",
+    role: "Core Member — HinduVahini",
+    bio: "Dedicated to the organizational mission and cultural outreach.",
+    image: "/upload/leaders_img/karan_singh.jpeg",
+    phones: []
   }
 ];
 

@@ -3,16 +3,24 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const { initDB } = require('./config/db');
 require('dotenv').config();
 
 const app = express();
 
+// Initialize Database
+initDB();
+
 // Security and Logging Middleware
 app.use(helmet({
-    contentSecurityPolicy: false, // Disabling temporarily to ensure inline scripts/fonts load correctly
+    contentSecurityPolicy: false,
 }));
 app.use(cors());
 app.use(morgan('dev'));
+app.use(express.json()); // Essential for parsing form data
+
+// API Routes
+app.use('/api', require('./routes/api'));
 
 // Static Resource Serving
 app.use(express.static(path.join(__dirname, 'public')));

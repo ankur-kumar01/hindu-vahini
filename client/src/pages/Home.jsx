@@ -72,33 +72,43 @@ export default function Home() {
       </section>
 
       {/* National President Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-12 items-center bg-light p-10 md:p-12 rounded-[20px] border-l-[6px] border-saffron shadow-soft">
-            <div className="relative rounded-[15px] overflow-hidden aspect-[3/4] border-[5px] border-white shadow-img animation-slide-up mx-auto w-full max-w-[280px] md:max-w-full">
-              <img src="/upload/leaders_img/ashwani_mishra.jpg" alt="Ashwani Mishra" className="w-full h-full object-cover" />
-              <div className="absolute bottom-4 right-4 bg-saffron text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg">
-                <CrownSimple weight="fill" size={24} />
+      {(() => {
+        const president = LEADERS.find(l => l.isPresident);
+        if (!president) return null;
+        
+        return (
+          <section className="py-20 bg-white">
+            <div className="max-w-6xl mx-auto px-6">
+              <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-12 items-center bg-light p-10 md:p-12 rounded-[20px] border-l-[6px] border-saffron shadow-soft">
+                <div className="relative rounded-[15px] overflow-hidden aspect-[3/4] border-[5px] border-white shadow-img animation-slide-up mx-auto w-full max-w-[280px] md:max-w-full">
+                  <img src={president.image} alt={president.name} className="w-full h-full object-cover" />
+                  <div className="absolute bottom-4 right-4 bg-saffron text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg">
+                    <CrownSimple weight="fill" size={24} />
+                  </div>
+                </div>
+                <div className="animation-slide-up animation-delay-1 text-center md:text-left">
+                  <h2 className="text-3xl md:text-4xl font-bold mb-2 text-dark">{president.name}</h2>
+                  <span className="inline-block text-lg font-semibold text-[#c65b13] mb-6">{president.role}</span>
+                  <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                    {president.bio}
+                  </p>
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    {president.phones.map((phone, i) => (
+                      <a 
+                        key={i}
+                        href={`tel:${phone.replace(/\s+/g, '')}`} 
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-medium transition-colors shadow-md ${i === 0 ? 'bg-saffron text-white hover:bg-saffronLight' : 'bg-transparent border-2 border-saffron text-saffron hover:bg-saffron hover:text-white'}`}
+                      >
+                        <Phone weight="fill" /> {phone}
+                      </a>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="animation-slide-up animation-delay-1 text-center md:text-left">
-              <h2 className="text-3xl md:text-4xl font-bold mb-2 text-dark">Ashwani Mishra</h2>
-              <span className="inline-block text-lg font-semibold text-[#c65b13] mb-6">Rashtriya Adhyaksh — HinduVahini</span>
-              <p className="text-gray-600 text-lg leading-relaxed mb-8">
-                Shri Ashwani Mishra ji leads HinduVahini's national mission with unwavering dedication to Hindu cultural values, guiding our initiatives across Bharat to preserve heritage and empower communities unconditionally.
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <a href="tel:+919935568569" className="flex items-center gap-2 bg-saffron text-white px-6 py-2.5 rounded-full font-medium hover:bg-saffronLight transition-colors shadow-md">
-                  <Phone weight="fill" /> +91 99355 68569
-                </a>
-                <a href="tel:+918318339152" className="flex items-center gap-2 bg-transparent border-2 border-saffron text-saffron px-6 py-2 rounded-full font-medium hover:bg-saffron hover:text-white transition-colors">
-                  <Phone weight="fill" /> +91 83183 39152
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        );
+      })()}
 
       {/* About Section */}
       <section id="about" className="py-24 bg-white">
