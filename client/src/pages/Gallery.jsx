@@ -63,9 +63,10 @@ export default function Gallery() {
   return (
     <div className="pt-32 pb-24 bg-light min-h-screen">
       <SEO 
-        title={`Journey Highlights — Page ${validPage}`} 
-        description={`Explore our recent event photos on page ${validPage}. Glimpses of community gatherings and cultural initiatives.`}
-        url={`/gallery?page=${validPage}`}
+        title={selectedImage ? "Photo Highlight" : `Journey Highlights — Page ${validPage}`} 
+        description={selectedImage ? "View this special moment from our community journey." : `Explore our recent event photos on page ${validPage}. Glimpses of community gatherings and cultural initiatives.`}
+        url={selectedImage ? `/gallery?page=${validPage}&img=${encodeURIComponent(selectedImage)}` : `/gallery?page=${validPage}`}
+        image={selectedImage}
       />
        <div className="max-w-7xl mx-auto px-6 text-center">
          <div className="mb-16">
