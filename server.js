@@ -54,7 +54,39 @@ app.get(/^(?!\/api).*/, (req, res) => {
                 <meta property="og:url" content="${siteUrl}${req.originalUrl}" />
             `;
             
-            // Inject after <head>
+            const updatedHtml = data.replace('<head>', `<head>${metaTags}`);
+            res.send(updatedHtml);
+        });
+    } else if (req.path === '/leadership' && req.query.leader) {
+        fs.readFile(indexPath, 'utf8', (err, data) => {
+            if (err) return res.sendFile(indexPath);
+
+            const leaderName = req.query.leader;
+            const siteUrl = "https://hinduvahini.online";
+            
+            // Simple mapping for OG previews without full cross-project imports
+            const leaderImages = {
+                "Ashwani Mishra": "/upload/leaders_img/ashwani_mishra.jpg",
+                "Anand Tiwari": "/upload/leaders_img/anand_tiwari.jpeg",
+                "Vimal Mishra": "/upload/leaders_img/vimal_mishra.jpeg",
+                "Ruchin Sharma": "/upload/leaders_img/ruchin_sharma.jpeg",
+                "Surendra Kumar": "/upload/leaders_img/surendra_kumar.jpeg",
+                "Akshay Sharma": "/upload/leaders_img/akshay_sharma.jpeg",
+                "Akhilesh Dwivedi": "/upload/leaders_img/akhilesh_dviwedi.jpeg",
+                "Dayanand": "/upload/leaders_img/dayanand.jpeg",
+                "Karan Singh": "/upload/leaders_img/karan_singh.jpeg"
+            };
+
+            const imgPath = leaderImages[leaderName] || "/logo.png";
+            const fullImgUrl = `${siteUrl}${imgPath}`;
+
+            const metaTags = `
+                <meta property="og:title" content="${leaderName} Profile | HinduVahini" />
+                <meta property="og:description" content="Official Identity Profile of ${leaderName} at HinduVahini Trust." />
+                <meta property="og:image" content="${fullImgUrl}" />
+                <meta property="og:url" content="${siteUrl}${req.originalUrl}" />
+            `;
+            
             const updatedHtml = data.replace('<head>', `<head>${metaTags}`);
             res.send(updatedHtml);
         });

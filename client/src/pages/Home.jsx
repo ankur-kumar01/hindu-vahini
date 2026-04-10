@@ -24,6 +24,10 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
+  const handleLeaderClick = (name) => {
+    navigate(`/leadership?leader=${encodeURIComponent(name)}`);
+  };
+
   return (
     <div className="w-full">
       <SEO 
@@ -80,8 +84,14 @@ export default function Home() {
           <section className="py-20 bg-white">
             <div className="max-w-6xl mx-auto px-6">
               <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-12 items-center bg-light p-10 md:p-12 rounded-[20px] border-l-[6px] border-saffron shadow-soft">
-                <div className="relative rounded-[15px] overflow-hidden aspect-[3/4] border-[5px] border-white shadow-img animation-slide-up mx-auto w-full max-w-[280px] md:max-w-full">
-                  <img src={president.image} alt={president.name} className="w-full h-full object-cover" />
+                <div 
+                  onClick={() => handleLeaderClick(president.name)}
+                  className="relative rounded-[15px] overflow-hidden aspect-[3/4] border-[5px] border-white shadow-img animation-slide-up mx-auto w-full max-w-[280px] md:max-w-full cursor-pointer group"
+                >
+                  <img src={president.image} alt={president.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                       <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-xs">Verify Profile</span>
+                  </div>
                   <div className="absolute bottom-4 right-4 bg-saffron text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg">
                     <CrownSimple weight="fill" size={24} />
                   </div>
@@ -197,7 +207,11 @@ export default function Home() {
             >
               {LEADERS.map((leader, i) => (
                 <SwiperSlide key={i}>
-                  <LeaderCard leader={leader} isVertical={true} />
+                  <LeaderCard 
+                    leader={leader} 
+                    isVertical={true} 
+                    onClick={() => handleLeaderClick(leader.name)}
+                  />
                 </SwiperSlide>
               ))}
             </Swiper>
