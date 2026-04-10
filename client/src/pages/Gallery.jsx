@@ -1,7 +1,23 @@
+import { useState, useEffect } from 'react';
+import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { GALLERY_IMAGES } from '../constants/data';
 import SEO from '../components/SEO';
 
 export default function Gallery() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(GALLERY_IMAGES.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = GALLERY_IMAGES.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="pt-32 pb-24 bg-light min-h-screen">
       <SEO 
@@ -10,12 +26,15 @@ export default function Gallery() {
         url="/gallery"
       />
        <div className="max-w-7xl mx-auto px-6 text-center">
-         <h1 className="text-4xl md:text-5xl font-bold text-dark mb-4">Journey Highlights</h1>
-         <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-16">Glimpses of our recent events, community gatherings, and cultural initiatives.</p>
+         <div className="mb-16">
+           <h1 className="text-4xl md:text-5xl font-bold text-dark mb-4">Journey Highlights</h1>
+           <p className="text-gray-600 text-lg max-w-2xl mx-auto">Glimpses of our recent events, community gatherings, and cultural initiatives.</p>
+         </div>
          
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
-           {GALLERY_IMAGES.map((img, i) => (
-             <div key={i} className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} animation-slide-up group`} style={{ animationDelay: `${i * 0.1}s` }}>
+         {/* Gallery Grid */}
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16">
+           {currentItems.map((img, i) => (
+             <div key={i} className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} animation-slide-up group`} style={{ animationDelay: `${(i % itemsPerPage) * 0.1}s` }}>
                <img src={img.src} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                  <span className="text-white font-medium tracking-wide">Zoom In</span>
@@ -23,6 +42,39 @@ export default function Gallery() {
              </div>
            ))}
          </div>
+
+         {/* Pagination Controls */}
+         {totalPages > 1 && (
+           <div className="flex items-center justify-center gap-2 md:gap-4 mt-12 overflow-x-auto py-2">
+             <button
+               onClick={() => paginate(currentPage - 1)}
+               disabled={currentPage === 1}
+               className={`p-2 rounded-full border border-gray-200 transition-all ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
+             >
+               <CaretLeft size={24} weight="bold" />
+             </button>
+
+             <div className="flex items-center gap-2">
+               {[...Array(totalPages)].map((_, i) => (
+                 <button
+                   key={i}
+                   onClick={() => paginate(i + 1)}
+                   className={`w-10 h-10 md:w-12 md:h-12 rounded-full font-bold transition-all border ${currentPage === i + 1 ? 'bg-saffron border-saffron text-white shadow-md scale-110' : 'bg-white border-gray-200 text-gray-500 hover:border-saffron hover:text-saffron'}`}
+                 >
+                   {i + 1}
+                 </button>
+               ))}
+             </div>
+
+             <button
+               onClick={() => paginate(currentPage + 1)}
+               disabled={currentPage === totalPages}
+               className={`p-2 rounded-full border border-gray-200 transition-all ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
+             >
+               <CaretRight size={24} weight="bold" />
+             </button>
+           </div>
+         )}
        </div>
     </div>
   );

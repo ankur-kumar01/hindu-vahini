@@ -5,7 +5,7 @@ export const LEADERS = [
     bio: "Shri Ashwani Mishra ji leads HinduVahini's national mission with unwavering dedication to Hindu cultural values.",
     image: "/upload/leaders_img/ashwani_mishra.jpg",
     isPresident: true,
-    phones: ["+91 99355 68569", "+91 83183 39152"]
+    phones: ["+91 99355 68569"]
   },
   {
     name: "Anand Tiwari",
@@ -30,38 +30,38 @@ export const LEADERS = [
   },
   {
     name: "Surendra Kumar",
-    role: "Sah-Sashastra Pramukh — HinduVahini",
+    role: "Rashtriya upadhyaksh — HinduVahini",
     bio: "Shri Surendra Kumar ji coordinates security and discipline across statewide events.",
     image: "/upload/leaders_img/surendra_kumar.jpeg",
     phones: ["+91 96515 28882"]
   },
   {
+    name: "Akshay Sharma",
+    role: "Pardesh Adhyaksh, Haryana — HinduVahini",
+    bio: "Shri Akshay Sharma ji is dedicated to the organizational mission and cultural outreach.",
+    image: "/upload/leaders_img/akshay_sharma.jpeg",
+    phones: ["+91 9050096403"]
+  },
+  {
     name: "Akhilesh Dwivedi",
     role: "Pradesh Vishesh Aamantarit Sadasya",
     bio: "Shri Akhilesh Dwivedi ji represents core organizational viewpoints in significant assemblies.",
-    image: "/upload/leaders_img/akhilesh_dwivedi.jpeg",
+    image: "/upload/leaders_img/akhilesh_dviwedi.jpeg",
     phones: ["+91 63935 91931"]
   },
   {
-    name: "Akshay Sharma",
-    role: "Core Member — HinduVahini",
-    bio: "Shri Akshay Sharma ji is dedicated to the organizational mission and cultural outreach.",
-    image: "/upload/leaders_img/akshay_sharma.jpeg",
-    phones: []
-  },
-  {
     name: "Dayanand",
-    role: "Core Member — HinduVahini",
+    role: "Pardesh Mahamantgri Harayana — HinduVahini",
     bio: "Dedicated to the organizational mission and cultural outreach.",
     image: "/upload/leaders_img/dayanand.jpeg",
-    phones: []
+    phones: ["+91 9992768186"]
   },
   {
     name: "Karan Singh",
-    role: "Core Member — HinduVahini",
+    role: "Pardesh Mahasachiv Haryana — HinduVahini",
     bio: "Dedicated to the organizational mission and cultural outreach.",
     image: "/upload/leaders_img/karan_singh.jpeg",
-    phones: []
+    phones: ["+91 8053906786"]
   }
 ];
 
@@ -70,7 +70,16 @@ export const GALLERY_IMAGES = [
   { src: "/upload/gallery_img/g2.jpeg", span: "row-span-1 col-span-1" },
   { src: "/upload/gallery_img/g3.jpeg", span: "row-span-1 col-span-1" },
   { src: "/upload/gallery_img/g4.jpeg", span: "row-span-1 col-span-2 md:col-span-1" },
-  { src: "/upload/gallery_img/g5.jpeg", span: "row-span-2 col-span-1" },
+  { src: "/upload/gallery_img/g11.jpeg", span: "row-span-2 col-span-1" },
   { src: "/upload/gallery_img/g6.jpeg", span: "row-span-1 col-span-1" },
   { src: "/upload/gallery_img/g7.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g8.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g9.jpeg", span: "row-span-2 col-span-2" },
+  { src: "/upload/gallery_img/g10.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g7 (2).jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g12.jpeg", span: "row-span-1 col-span-2 md:col-span-1" },
+  { src: "/upload/gallery_img/g13.jpeg", span: "row-span-2 col-span-1" },
+  { src: "/upload/gallery_img/g14.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g15.jpeg", span: "row-span-1 col-span-1" },
+  { src: "/upload/gallery_img/g5.jpeg", span: "row-span-1 col-span-1" },
 ];
