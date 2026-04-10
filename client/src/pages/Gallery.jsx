@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { GALLERY_IMAGES } from '../constants/data';
 import SEO from '../components/SEO';
+import ImageModal from '../components/ImageModal';
 
 export default function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedImage, setSelectedImage] = useState(null);
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const itemsPerPage = 8;
   
@@ -33,17 +35,22 @@ export default function Gallery() {
       />
        <div className="max-w-7xl mx-auto px-6 text-center">
          <div className="mb-16">
-           <h1 className="text-4xl md:text-5xl font-bold text-dark mb-4">Journey Highlights</h1>
-           <p className="text-gray-600 text-lg max-w-2xl mx-auto">Glimpses of our recent events, community gatherings, and cultural initiatives.</p>
+           <h1 className="text-4xl md:text-5xl font-bold text-dark mb-4 drop-shadow-sm font-heading">Journey Highlights</h1>
+           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">Glimpses of our recent events, community gatherings, and cultural initiatives.</p>
          </div>
          
          {/* Gallery Grid */}
          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16">
            {currentItems.map((img, i) => (
-             <div key={i} className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} animation-slide-up group`} style={{ animationDelay: `${(i % itemsPerPage) * 0.1}s` }}>
+             <div 
+               key={i} 
+               onClick={() => setSelectedImage(img.src)}
+               className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} animation-slide-up group cursor-pointer`} 
+               style={{ animationDelay: `${(i % itemsPerPage) * 0.1}s` }}
+             >
                <img src={img.src} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-               <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                 <span className="text-white font-medium tracking-wide">Zoom In</span>
+               <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                 <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-sm">View Full Size</span>
                </div>
              </div>
            ))}
@@ -81,6 +88,12 @@ export default function Gallery() {
              </button>
            </div>
          )}
+
+         {/* Image Modal */}
+         <ImageModal 
+           image={selectedImage} 
+           onClose={() => setSelectedImage(null)} 
+         />
        </div>
     </div>
   );

@@ -11,12 +11,14 @@ import 'swiper/css/navigation';
 
 import LeaderCard from '../components/LeaderCard';
 import DonationModal from '../components/DonationModal';
+import ImageModal from '../components/ImageModal';
 import SEO from '../components/SEO';
 import { LEADERS, GALLERY_IMAGES } from '../constants/data';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const openDonation = (amt = '') => {
     setSelectedAmount(amt);
@@ -243,12 +245,16 @@ export default function Home() {
           <h2 className="text-4xl font-bold mb-4 text-dark relative inline-block pb-4 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-16 after:h-1 after:bg-saffron">Journey Highlights</h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-16">Glimpses of our recent community gatherings and cultural initiatives.</p>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16 px-2">
             {GALLERY_IMAGES.slice(0, 5).map((img, i) => (
-              <div key={i} className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} group`}>
+              <div 
+                key={i} 
+                onClick={() => setSelectedImage(img.src)}
+                className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span} group cursor-pointer`}
+              >
                 <img src={img.src} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <span className="text-white font-medium tracking-wide">View Image</span>
+                <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                  <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-xs">View Full Size</span>
                 </div>
               </div>
             ))}
@@ -264,6 +270,11 @@ export default function Home() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         initialAmount={selectedAmount} 
+      />
+
+      <ImageModal 
+        image={selectedImage}
+        onClose={() => setSelectedImage(null)}
       />
     </div>
   );
