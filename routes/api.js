@@ -25,15 +25,24 @@ router.post('/members', async (req, res) => {
 // @route   POST /api/contact
 // @desc    Submit a contact inquiry
 router.post('/contact', async (req, res) => {
-    const { name, email, subject, message } = req.body;
+    const { name, email, phone, city, state, country, subject, message } = req.body;
 
     if (!name || !email || !message) {
         return res.status(400).json({ error: 'Name, Email, and Message are required.' });
     }
 
     try {
-        const sql = 'INSERT INTO inquiries (name, email, subject, message) VALUES (?, ?, ?, ?)';
-        await query(sql, [name, email, subject, message]);
+        const sql = 'INSERT INTO inquiries (name, email, phone, city, state, country, subject, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        await query(sql, [
+            name, 
+            email, 
+            phone || null, 
+            city || null, 
+            state || null, 
+            country || 'India', 
+            subject || null, 
+            message
+        ]);
         
         res.status(201).json({ message: 'Your message has been sent successfully!' });
     } catch (error) {

@@ -1,7 +1,8 @@
 const mysql = require('mysql2/promise');
 const path = require('path');
-// Use override:true so our .env always wins over any external env injectors (dotenvx, etc.)
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+// Only override environment variables locally to bypass dotenvx conflicts. Production (Hostinger) will remain untouched.
+const isProd = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'production';
+require('dotenv').config({ path: path.resolve(__dirname, '../.env'), override: !isProd });
 
 const dbConfig = {
     host: process.env.DB_HOST,
@@ -9,6 +10,12 @@ const dbConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
 };
+
+// CRITICAL FIX: In local dev (Windows/XAMPP), 'localhost' often resolves to IPv6 '::1'
+// causing MySQL 'Access denied'. We explicitly force IPv4 '127.0.0.1' locally.
+if (!isProd && dbConfig.host === 'localhost') {
+    dbConfig.host = '127.0.0.1';
+}
 
 let pool;
 

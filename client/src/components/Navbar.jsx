@@ -27,7 +27,7 @@ export default function Navbar() {
     { name: 'Gallery', path: '/gallery', isHash: false },
     { name: 'About', path: '/#about', isHash: true },
     { name: 'Initiatives', path: '/#initiatives', isHash: true },
-    { name: 'Contact', path: '/#contact', isHash: true },
+    { name: 'Contact', path: '/contact', isHash: false },
   ];
 
   return (

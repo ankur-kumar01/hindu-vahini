@@ -119,4 +119,40 @@ router.put('/change-password', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   GET /api/admin/queries
+// @desc    Get all contact inquiries
+router.get('/queries', authMiddleware, async (req, res) => {
+    try {
+        const [rows] = await query('SELECT * FROM inquiries ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error('Admin queries error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   PUT /api/admin/queries/:id/status
+// @desc    Update status of a contact inquiry
+router.put('/queries/:id/status', authMiddleware, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !['Pending', 'Reviewed', 'Resolved'].includes(status)) {
+        return res.status(400).json({ error: 'Valid status is required.' });
+    }
+
+    try {
+        const [result] = await query('UPDATE inquiries SET status = ? WHERE id = ?', [status, id]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Inquiry not found.' });
+        }
+
+        res.json({ message: 'Status updated successfully.', status });
+    } catch (error) {
+        console.error('Admin update query status error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
 module.exports = router;

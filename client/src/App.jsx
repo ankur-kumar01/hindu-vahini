@@ -5,11 +5,13 @@ import Leadership from './pages/Leadership';
 import Gallery from './pages/Gallery';
 import Donate from './pages/Donate';
 import JoinUs from './pages/JoinUs';
+import Contact from './pages/Contact';
 
 // Admin Panel
 import AdminLogin from './admin/AdminLogin';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminHome from './admin/AdminHome';
+import AdminQueries from './admin/AdminQueries';
 import AdminProfile from './admin/AdminProfile';
 import AdminChangePassword from './admin/AdminChangePassword';
 
@@ -23,11 +25,15 @@ function App() {
         <Route path="/gallery" element={<Layout><Gallery /></Layout>} />
         <Route path="/donate" element={<Layout><Donate /></Layout>} />
         <Route path="/join-us" element={<Layout><JoinUs /></Layout>} />
+        <Route path="/contact" element={<Layout><Contact /></Layout>} />
 
         {/* Admin Routes - standalone, no Navbar/Footer */}
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />}>
           <Route index element={<AdminHome />} />
+        </Route>
+        <Route path="/admin/queries" element={<AdminDashboard />}>
+          <Route index element={<AdminQueries />} />
         </Route>
         <Route path="/admin/profile" element={<AdminDashboard />}>
           <Route index element={<AdminProfile />} />
