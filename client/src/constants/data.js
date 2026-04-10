@@ -44,10 +44,10 @@ export const LEADERS = [
   },
   {
     name: "Akhilesh Dwivedi",
-    role: "Pradesh Vishesh Aamantarit Sadasya",
+    role: "Pradesh Adhyaksh Uttar Pradesh",
     bio: "Shri Akhilesh Dwivedi ji represents core organizational viewpoints in significant assemblies.",
     image: "/upload/leaders_img/akhilesh_dviwedi.jpeg",
-    phones: ["+91 63935 91931"]
+    phones: ["+91 9451010762"]
   },
   {
     name: "Dayanand",
