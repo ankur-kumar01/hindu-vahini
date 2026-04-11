@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, NavLink, Outlet } from 'react-router-dom';
 import {
-  House, User, LockKey, SignOut, List, X, ShieldCheck, Bell, Envelope, Users, Images
+  House, User, LockKey, SignOut, List, X, ShieldCheck, Bell, Envelope, Users, Images, Megaphone, HandHeart
 } from '@phosphor-icons/react';
 
 export default function AdminDashboard() {
@@ -59,6 +59,8 @@ export default function AdminDashboard() {
     { to: '/admin/dashboard', icon: House, label: 'Dashboard' },
     { to: '/admin/leaders', icon: Users, label: 'Manage Leaders' },
     { to: '/admin/gallery', icon: Images, label: 'Manage Gallery' },
+    { to: '/admin/campaigns', icon: Megaphone, label: 'Manage Campaigns' },
+    { to: '/admin/donations', icon: HandHeart, label: 'Manage Donations' },
     { to: '/admin/queries', icon: Envelope, label: 'Contact Queries' },
     { to: '/admin/profile', icon: User, label: 'My Profile' },
     { to: '/admin/change-password', icon: LockKey, label: 'Change Password' },

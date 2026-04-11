@@ -2,7 +2,19 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
-import { CheckCircle, UsersThree, FlowerLotus, Books, HandHeart, UsersFour, CrownSimple, Phone, Images } from '@phosphor-icons/react';
+import { 
+  CheckCircle, 
+  UsersThree, 
+  FlowerLotus, 
+  Books, 
+  HandHeart, 
+  UsersFour, 
+  CrownSimple, 
+  Phone, 
+  Images,
+  Megaphone,
+  ArrowRight
+} from '@phosphor-icons/react';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -10,6 +22,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import LeaderCard from '../components/LeaderCard';
+import CampaignCard from '../components/CampaignCard';
 import DonationModal from '../components/DonationModal';
 import SEO from '../components/SEO';
 
@@ -18,22 +31,26 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState('');
   const [leaders, setLeaders] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
   const [galleryImages, setGalleryImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [leadersRes, galleryRes] = await Promise.all([
+        const [leadersRes, galleryRes, campaignsRes] = await Promise.all([
           fetch('/api/leaders'),
-          fetch('/api/gallery')
+          fetch('/api/gallery'),
+          fetch('/api/campaigns')
         ]);
         
         const leadersData = await leadersRes.json();
         const galleryData = await galleryRes.json();
+        const campaignsData = await campaignsRes.json();
         
         setLeaders(leadersData);
         setGalleryImages(galleryData);
+        setCampaigns(campaignsData.slice(0, 3)); // Only show recent 3
       } catch (err) {
         console.error('Home Page Data Fetch Error:', err);
       } finally {
@@ -61,7 +78,7 @@ export default function Home() {
         url="/"
       />
       
-      {/* Hero Section - Restored to original aesthetics */}
+      {/* Hero Section */}
       <section id="home" className="relative flex items-center justify-center min-h-[95vh] text-center px-6 overflow-hidden pt-20">
         <div className="absolute inset-[-5%] z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-dark/95 to-dark/85 z-10"></div>
@@ -97,6 +114,37 @@ export default function Home() {
               View Gallery
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Recent Missions Section - Added New Section */}
+      <section className="py-24 bg-light overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+            <div className="max-w-xl text-left">
+              <span className="text-saffron font-black uppercase tracking-[0.2em] text-[10px] mb-3 block">Direct Impact</span>
+              <h2 className="text-4xl font-bold text-dark font-heading">Active Welfare Missions</h2>
+              <p className="text-gray-500 mt-4 leading-relaxed font-medium">
+                Our ongoing initiatives need your support. Target-based missions provide transparency and ensure your contribution reaches the right hands.
+              </p>
+            </div>
+            <Link 
+              to="/campaigns" 
+              className="inline-flex items-center gap-2 text-dark font-black uppercase tracking-widest text-xs hover:text-saffron transition-colors group"
+            >
+              View All Missions <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {!loading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {campaigns.map((camp, i) => (
+                <div key={camp.id} className="animation-slide-up" style={{ animationDelay: `${i * 150}ms` }}>
+                  <CampaignCard campaign={camp} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -250,7 +298,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Donation */}
+      {/* Contribution Section - Updated Terminology */}
       <section id="donate" className="py-24 bg-saffron relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
@@ -260,12 +308,12 @@ export default function Home() {
           <p className="text-lg text-white/90 mb-12">Your contribution directly sustains our educational and welfare programs. Every drop makes an ocean.</p>
           
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 mb-10 text-left">
-            <div className="flex justify-between text-sm font-semibold mb-3">
-              <span>Raised: ₹5,12,000</span>
-              <span>Goal: ₹10,00,000</span>
+            <div className="flex justify-between text-sm font-semibold mb-3 text-white/70">
+              <span className="flex items-center gap-1.5"><HandHeart size={16} /> Impact Created: ₹5,12,000</span>
+              <span>General Fund Goal</span>
             </div>
             <div className="w-full bg-dark/20 rounded-full h-4 overflow-hidden">
-              <div className="bg-white h-full rounded-full transition-all duration-1000" style={{width: '51%'}}></div>
+              <div className="bg-white h-full rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.4)]" style={{width: '51%'}}></div>
             </div>
           </div>
           
@@ -273,7 +321,7 @@ export default function Home() {
             <button onClick={() => openDonation('50')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹50</button>
             <button onClick={() => openDonation('200')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹200</button>
             <button onClick={() => openDonation('1000')} className="bg-transparent border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/20 transition-colors">₹1000</button>
-            <button onClick={() => openDonation()} className="bg-dark text-white px-8 py-3 rounded-full font-semibold hover:bg-dark/90 transition-colors shadow-lg">Donate Custom</button>
+            <button onClick={() => openDonation()} className="bg-dark text-white px-8 py-3 rounded-full font-semibold hover:bg-dark/90 transition-colors shadow-lg">Contribute Custom</button>
           </div>
         </div>
       </section>

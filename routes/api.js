@@ -1,6 +1,37 @@
 const express = require('express');
 const router = express.Namespace ? express.Namespace() : express.Router();
 const { query } = require('../config/db');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Ensure proof directory exists
+const proofDir = path.join(__dirname, '../uploads/donation_proofs');
+if (!fs.existsSync(proofDir)) {
+    fs.mkdirSync(proofDir, { recursive: true });
+}
+
+// Multer Storage Configuration for Proofs
+const storageProof = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, proofDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'proof-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const uploadProof = multer({ 
+    storage: storageProof,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB Limit
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed.'));
+        }
+    }
+});
 
 // @route   POST /api/members
 // @desc    Register a new member
@@ -75,4 +106,87 @@ router.get('/gallery', async (req, res) => {
     }
 });
 
+// ==============================
+// CAMPAIGNS PUBLIC API
+// ==============================
+
+// @route   GET /api/campaigns
+router.get('/campaigns', async (req, res) => {
+    try {
+        const [rows] = await query('SELECT * FROM campaigns WHERE status = "active" ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error('Fetch campaigns error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   GET /api/campaigns/:id
+router.get('/campaigns/:id', async (req, res) => {
+    try {
+        const [campaigns] = await query('SELECT * FROM campaigns WHERE id = ?', [req.params.id]);
+        if (campaigns.length === 0) return res.status(404).json({ error: 'Campaign not found.' });
+        
+        const [items] = await query('SELECT * FROM campaign_items WHERE campaign_id = ?', [req.params.id]);
+        
+        res.json({
+            ...campaigns[0],
+            items
+        });
+    } catch (error) {
+        console.error('Fetch campaign detail error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   POST /api/campaigns/:id/donate
+// @desc    Register a donation intent/pledge (Public)
+router.post('/campaigns/:id/donate', async (req, res) => {
+    try {
+        const { donor_name, amount, transaction_id } = req.body;
+        const campaign_id = req.params.id;
+
+        if (!donor_name || !amount) {
+            return res.status(400).json({ error: 'Name and amount are required.' });
+        }
+
+        await query(
+            'INSERT INTO campaign_donations (campaign_id, donor_name, amount, transaction_id, status) VALUES (?, ?, ?, ?, ?)',
+            [campaign_id, donor_name, amount, transaction_id || '', 'pending']
+        );
+        res.status(201).json({ message: 'Donation pledge recorded. Awaiting verification.' });
+    } catch (error) {
+        console.error('Post donation error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   POST /api/donations/verify
+// @desc    Submit payment verification details (Public)
+router.post('/donations/verify', uploadProof.single('proof_image'), async (req, res) => {
+    try {
+        const { donor_name, transaction_id, amount, campaign_id } = req.body;
+        const proof_image_url = req.file ? `/uploads/donation_proofs/${req.file.filename}` : null;
+
+        if (!donor_name || !amount) {
+            return res.status(400).json({ error: 'Name and amount are required.' });
+        }
+
+        if (!proof_image_url) {
+            return res.status(400).json({ error: 'Please upload a Payment Screenshot as proof of transaction.' });
+        }
+
+        await query(
+            'INSERT INTO campaign_donations (campaign_id, donor_name, amount, transaction_id, proof_image_url, status) VALUES (?, ?, ?, ?, ?, ?)',
+            [campaign_id || null, donor_name, amount, transaction_id || '', proof_image_url, 'pending']
+        );
+
+        res.status(201).json({ message: 'Verification details submitted. Our team will verify and update the status soon.' });
+    } catch (error) {
+        console.error('Verify donation error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
 module.exports = router;
+

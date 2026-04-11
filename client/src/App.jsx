@@ -14,8 +14,14 @@ import AdminHome from './admin/AdminHome';
 import AdminQueries from './admin/AdminQueries';
 import AdminLeaders from './admin/AdminLeaders';
 import AdminGallery from './admin/AdminGallery';
+import AdminCampaigns from './admin/AdminCampaigns';
+import AdminDonations from './admin/AdminDonations';
 import AdminProfile from './admin/AdminProfile';
 import AdminChangePassword from './admin/AdminChangePassword';
+
+// Public Campaign Pages
+import CampaignList from './pages/CampaignList';
+import CampaignDetail from './pages/CampaignDetail';
 
 function App() {
   return (
@@ -26,6 +32,8 @@ function App() {
         <Route path="/leadership" element={<Layout><Leadership /></Layout>} />
         <Route path="/gallery" element={<Layout><Gallery /></Layout>} />
         <Route path="/donate" element={<Layout><Donate /></Layout>} />
+        <Route path="/campaigns" element={<Layout><CampaignList /></Layout>} />
+        <Route path="/campaigns/:id" element={<Layout><CampaignDetail /></Layout>} />
         <Route path="/join-us" element={<Layout><JoinUs /></Layout>} />
         <Route path="/contact" element={<Layout><Contact /></Layout>} />
 
@@ -42,6 +50,12 @@ function App() {
         </Route>
         <Route path="/admin/gallery" element={<AdminDashboard />}>
           <Route index element={<AdminGallery />} />
+        </Route>
+        <Route path="/admin/campaigns" element={<AdminDashboard />}>
+          <Route index element={<AdminCampaigns />} />
+        </Route>
+        <Route path="/admin/donations" element={<AdminDashboard />}>
+          <Route index element={<AdminDonations />} />
         </Route>
         <Route path="/admin/profile" element={<AdminDashboard />}>
           <Route index element={<AdminProfile />} />

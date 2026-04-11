@@ -23,10 +23,10 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Home', path: '/', isHash: false },
+    { name: 'Missions', path: '/campaigns', isHash: false },
     { name: 'Leadership', path: '/leadership', isHash: false },
     { name: 'Gallery', path: '/gallery', isHash: false },
     { name: 'About', path: '/#about', isHash: true },
-    { name: 'Initiatives', path: '/#initiatives', isHash: true },
     { name: 'Contact', path: '/contact', isHash: false },
   ];
 
