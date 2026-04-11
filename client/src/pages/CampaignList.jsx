@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { 
   Megaphone, 
-  ArrowRight, 
   HandHeart, 
   ChartLineUp, 
-  UsersThree,
-  CaretRight
+  UsersThree
 } from '@phosphor-icons/react';
 import SEO from '../components/SEO';
+import CampaignCard from '../components/CampaignCard';
 
 const CampaignList = () => {
     const [campaigns, setCampaigns] = useState([]);
@@ -33,7 +31,7 @@ const CampaignList = () => {
     return (
         <div className="pt-20 md:pt-28 min-h-screen bg-light">
             <SEO 
-                title="Welfare Campaigns" 
+                title="Active Missions" 
                 description="Join our active welfare missions. From animal rescue to child nutrition, see how your contributions create a direct impact."
                 url="/campaigns"
             />
@@ -98,69 +96,9 @@ const CampaignList = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-                        {campaigns.map((campaign) => {
-                             const progress = Math.min(100, (campaign.current_amount / campaign.goal_amount) * 100);
-                             return (
-                                <Link 
-                                    key={campaign.id} 
-                                    to={`/campaigns/${campaign.id}`}
-                                    className="group bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-saffron/20 flex flex-col"
-                                >
-                                    <div className="relative h-64 overflow-hidden">
-                                        <img 
-                                            src={campaign.image_url || '/placeholder-banner.jpg'} 
-                                            alt={campaign.title} 
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
-                                        <div className="absolute top-6 left-6">
-                                            <span className="bg-saffron text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">
-                                                Active Cause
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-8 flex-1 flex flex-col">
-                                        <h3 className="text-xl md:text-2xl font-bold text-dark mb-3 font-heading group-hover:text-saffron transition-colors leading-tight">
-                                            {campaign.title}
-                                        </h3>
-                                        <p className="text-gray-500 text-sm line-clamp-2 mb-8 leading-relaxed">
-                                            {campaign.short_description}
-                                        </p>
-
-                                        <div className="mt-auto space-y-6">
-                                            {/* Progress UI */}
-                                            <div className="space-y-3">
-                                                <div className="flex justify-between items-end">
-                                                    <div>
-                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Impact Goal</p>
-                                                        <p className="text-lg font-bold text-dark">₹{campaign.current_amount.toLocaleString()} <span className="text-xs text-gray-400 font-normal">of ₹{campaign.goal_amount.toLocaleString()}</span></p>
-                                                    </div>
-                                                    <span className="text-saffron font-bold text-xl drop-shadow-sm">{Math.round(progress)}%</span>
-                                                </div>
-                                                <div className="h-2.5 w-full bg-light rounded-full overflow-hidden shadow-inner">
-                                                    <div 
-                                                        className="h-full bg-saffron transition-all duration-1000 shadow-[0_0_15px_rgba(255,153,51,0.4)] relative" 
-                                                        style={{ width: `${progress}%` }}
-                                                    >
-                                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center justify-between pt-2 border-t border-gray-50 uppercase tracking-widest font-bold text-[10px]">
-                                                <span className="text-gray-400 flex items-center gap-1.5">
-                                                    <HandHeart size={14} className="text-saffron" /> Join Mission
-                                                </span>
-                                                <span className="text-saffron flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                                    Details <ArrowRight size={12} weight="bold" />
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                             );
-                        })}
+                        {campaigns.map((campaign) => (
+                           <CampaignCard key={campaign.id} campaign={campaign} />
+                        ))}
                     </div>
                 )}
             </section>

@@ -1,12 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { HandHeart, TrendUp, Clock } from '@phosphor-icons/react';
+import { HandHeart, TrendUp, ShareNetwork, WhatsappLogo, Copy, Check } from '@phosphor-icons/react';
 
 const CampaignCard = ({ campaign }) => {
+    const [copied, setCopied] = useState(false);
     const progress = Math.min(100, (campaign.current_amount / campaign.goal_amount) * 100);
     
+    const shareUrl = `${window.location.origin}/campaigns/${campaign.id}`;
+    const shareText = `Check out this mission: ${campaign.title}. Your support can make a huge difference! `;
+
+    const copyLink = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const shareOnWhatsApp = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const url = `https://wa.me/?text=${encodeURIComponent(shareText + shareUrl)}`;
+        window.open(url, '_blank');
+    };
+
     return (
-        <div className="bg-white rounded-[32px] overflow-hidden shadow-soft border border-gray-100 group hover:shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+        <div className="bg-white rounded-[32px] overflow-hidden shadow-soft border border-gray-100 group hover:shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full relative">
             {/* Image Section */}
             <div className="relative h-56 overflow-hidden">
                 <img 
@@ -20,6 +39,24 @@ const CampaignCard = ({ campaign }) => {
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-[10px] font-black uppercase tracking-widest text-dark">Active Mission</span>
+                </div>
+
+                {/* Quick Share Actions */}
+                <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-12 group-hover:translate-x-0 transition-transform duration-500">
+                    <button 
+                        onClick={shareOnWhatsApp}
+                        className="w-9 h-9 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all"
+                        title="Share on WhatsApp"
+                    >
+                        <WhatsappLogo size={20} weight="fill" />
+                    </button>
+                    <button 
+                        onClick={copyLink}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all ${copied ? 'bg-green-500 text-white' : 'bg-white text-saffron'}`}
+                        title="Copy Mission Link"
+                    >
+                        {copied ? <Check size={20} weight="bold" /> : <Copy size={20} weight="bold" />}
+                    </button>
                 </div>
             </div>
 
