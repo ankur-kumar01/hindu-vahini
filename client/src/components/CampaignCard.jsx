@@ -1,86 +1,58 @@
-import React, { useState } from 'react';
+import { HandHeart, ArrowsOutSimple } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
-import { HandHeart, TrendUp, ShareNetwork, WhatsappLogo, Copy, Check } from '@phosphor-icons/react';
 
 const CampaignCard = ({ campaign }) => {
-    const [copied, setCopied] = useState(false);
     const progress = Math.min(100, (campaign.current_amount / campaign.goal_amount) * 100);
     
-    const shareUrl = `${window.location.origin}/campaigns/${campaign.id}`;
-    const shareText = `Check out this mission: ${campaign.title}. Your support can make a huge difference! `;
-
-    const copyLink = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    const shareOnWhatsApp = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const url = `https://wa.me/?text=${encodeURIComponent(shareText + shareUrl)}`;
-        window.open(url, '_blank');
-    };
-
     return (
-        <div className="bg-white rounded-[32px] overflow-hidden shadow-soft border border-gray-100 group hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-all duration-500 flex flex-col h-full relative">
+        <div className="group bg-white rounded-[32px] overflow-hidden border border-gray-100/50 shadow-soft hover:shadow-2xl transition-all duration-500 flex flex-col h-full hover:-translate-y-2">
             {/* Image Section */}
-            <div className="relative h-56 overflow-hidden">
+            <div className="relative aspect-[16/10] overflow-hidden">
                 <img 
-                    src={campaign.image_url || '/placeholder-banner.jpg'} 
-                    alt={campaign.title} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    src={campaign.image_url || '/placeholder-mission.jpg'} 
+                    alt={campaign.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                {/* Status Badge */}
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-dark">Active Mission</span>
+                {/* Impact Badge */}
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg transform -translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-dark flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 bg-saffron rounded-full animate-pulse"></div>
+                        Direct Impact
+                    </span>
                 </div>
 
-                {/* Quick Share Actions */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-12 group-hover:translate-x-0 transition-transform duration-500">
-                    <button 
-                        onClick={shareOnWhatsApp}
-                        className="w-9 h-9 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all"
-                        title="Share on WhatsApp"
-                    >
-                        <WhatsappLogo size={20} weight="fill" />
-                    </button>
-                    <button 
-                        onClick={copyLink}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all ${copied ? 'bg-green-500 text-white' : 'bg-white text-saffron'}`}
-                        title="Copy Mission Link"
-                    >
-                        {copied ? <Check size={20} weight="bold" /> : <Copy size={20} weight="bold" />}
-                    </button>
-                </div>
+                <Link 
+                    to={`/campaigns/${campaign.id}`}
+                    className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center text-dark opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 hover:bg-saffron hover:text-white shadow-xl"
+                >
+                    <ArrowsOutSimple size={20} weight="bold" />
+                </Link>
             </div>
 
             {/* Content Section */}
-            <div className="p-6 flex flex-col flex-1">
-                <h3 className="text-xl font-bold text-dark mb-2 leading-tight line-clamp-2 h-14 group-hover:text-saffron transition-colors">
-                    {campaign.title}
-                </h3>
-                <p className="text-gray-500 text-xs font-medium line-clamp-2 mb-6 h-8">
-                    {campaign.short_description}
-                </p>
+            <div className="p-6 md:p-8 flex flex-col flex-1">
+                <div className="mb-4">
+                    <h3 className="text-xl font-bold text-dark group-hover:text-saffron transition-colors line-clamp-1 mb-2">
+                        {campaign.title}
+                    </h3>
+                    <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 font-medium">
+                        {campaign.short_description || campaign.description}
+                    </p>
+                </div>
 
-                {/* Progress Area */}
-                <div className="mt-auto space-y-4">
-                    <div className="space-y-2">
+                <div className="mt-auto space-y-6">
+                    {/* Progress Bar */}
+                    <div className="space-y-3">
                         <div className="flex justify-between items-end">
-                            <div className="flex items-center gap-1.5">
-                                <TrendUp size={16} className="text-saffron" weight="bold" />
-                                <span className="text-xs font-black text-dark tracking-wide">
-                                    ₹{campaign.current_amount.toLocaleString()} 
-                                    <span className="text-gray-400 font-bold ml-1 uppercase text-[9px]">Raised</span>
-                                </span>
+                            <div>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Raised So Far</p>
+                                <p className="text-lg font-black text-dark tracking-tighter">₹{campaign.current_amount.toLocaleString()}</p>
                             </div>
-                            <span className="text-saffron font-black text-sm">{Math.round(progress)}%</span>
+                            <div className="text-right">
+                                <span className="text-sm font-black text-saffron">{Math.round(progress)}%</span>
+                            </div>
                         </div>
                         <div className="h-2 w-full bg-light rounded-full overflow-hidden shadow-inner p-[2px]">
                             <div 
@@ -93,9 +65,9 @@ const CampaignCard = ({ campaign }) => {
                     <div className="flex items-center gap-2 pt-2">
                         <Link 
                             to={`/campaigns/${campaign.id}`}
-                            className="flex-1 bg-saffron hover:bg-dark text-white text-center py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-saffron/10"
+                            className="flex-1 bg-saffron hover:bg-dark text-white text-center py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-saffron/10 group-hover:scale-[1.02]"
                         >
-                            Contribute Now <HandHeart size={18} weight="fill" />
+                            Contribute Now <HandHeart size={18} weight="fill" className="animate-pulse" />
                         </Link>
                     </div>
                 </div>

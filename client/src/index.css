@@ -57,3 +57,47 @@
 .hero-radial-gradient {
   background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.5) 100%);
 }
+
+/* Divine Blessing Animations */
+@keyframes divine-rays {
+  0% { transform: rotate(0deg) scale(1); opacity: 0.3; }
+  50% { transform: rotate(180deg) scale(1.1); opacity: 0.5; }
+  100% { transform: rotate(360deg) scale(1); opacity: 0.3; }
+}
+
+@keyframes divine-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; filter: blur(20px); }
+  50% { transform: scale(1.2); opacity: 0.7; filter: blur(40px); }
+}
+
+@keyframes divine-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes divine-shimmer {
+  0% { transform: translateY(-100%) translateX(-10%); opacity: 0; }
+  20% { opacity: 0.5; }
+  80% { opacity: 0.5; }
+  100% { transform: translateY(100vh) translateX(10%); opacity: 0; }
+}
+
+.animate-divine-rays {
+  animation: divine-rays 30s linear infinite;
+}
+
+.animate-divine-pulse {
+  animation: divine-pulse 6s ease-in-out infinite;
+}
+
+.animate-divine-float {
+  animation: divine-float 8s ease-in-out infinite;
+}
+
+.animate-divine-shimmer {
+  animation: divine-shimmer 15s linear infinite;
+}
+
+.divine-mask {
+  mask-image: radial-gradient(circle, black 40%, transparent 80%);
+}

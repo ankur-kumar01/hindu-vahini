@@ -12,7 +12,6 @@ import {
   CrownSimple, 
   Phone, 
   Images,
-  Megaphone,
   ArrowRight
 } from '@phosphor-icons/react';
 
@@ -80,19 +79,20 @@ export default function Home() {
       
       {/* Hero Section */}
       <section id="home" className="relative flex items-center justify-center min-h-[95vh] text-center px-6 overflow-hidden pt-20">
-        <div className="absolute inset-[-5%] z-0">
+        <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-br from-dark/95 to-dark/85 z-10"></div>
           <div className="absolute inset-0 hero-radial-gradient z-20"></div>
+          
           <img 
             src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Akshardham_Temple_Delhi_%287367683918%29.jpg" 
             alt="Hero Background" 
-            className="w-full h-full object-cover animate-kenburns"
+            className="w-full h-full object-cover animate-kenburns" 
           />
         </div>
 
         <div className="relative z-30 max-w-4xl mx-auto flex flex-col items-center fade-in">
           <span className="bg-saffron/20 text-saffron text-sm font-bold uppercase tracking-[2px] py-2 px-5 rounded-full mb-6 border border-saffron/50">
-            Together We Conserve
+            धर्मो रक्षति रक्षितः
           </span>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
             Preserving Culture.<br /><span className="text-white">Empowering Communities.</span>
@@ -101,12 +101,12 @@ export default function Home() {
             Join us in our mission to protect heritage, foster unity, advance education, and create lasting social impact.
           </p>
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-            <Link 
-              to="/leadership" 
+            <button 
+              onClick={() => openDonation()}
               className="bg-saffron text-white px-10 py-4 rounded-full font-bold hover:bg-saffronLight hover:-translate-y-1 transition-all w-full sm:w-auto shadow-[0_4px_15px_rgba(255,153,51,0.3)] text-center"
             >
-              Our Team
-            </Link>
+              Contribute Now
+            </button>
             <Link 
               to="/gallery" 
               className="bg-transparent border-2 border-white/50 text-white px-10 py-[14px] rounded-full font-bold hover:bg-white hover:text-dark hover:border-white hover:-translate-y-1 transition-all w-full sm:w-auto text-center"
@@ -117,7 +117,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Recent Missions Section - Added New Section */}
+      {/* Recent Missions Section */}
       <section className="py-24 bg-light overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
@@ -298,17 +298,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contribution Section - Updated Terminology */}
-      <section id="donate" className="py-24 bg-saffron relative overflow-hidden">
+      {/* Contribution Section */}
+      <section id="donate" className="py-24 bg-saffron relative overflow-hidden text-white text-center">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
         
-        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center text-white">
+        <div className="max-w-4xl mx-auto px-6 relative z-10">
           <h2 className="text-4xl font-bold mb-6">Support the Dharma. Empower the Future.</h2>
           <p className="text-lg text-white/90 mb-12">Your contribution directly sustains our educational and welfare programs. Every drop makes an ocean.</p>
           
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 mb-10 text-left">
-            <div className="flex justify-between text-sm font-semibold mb-3 text-white/70">
+            <div className="flex justify-between text-sm font-semibold mb-3">
               <span className="flex items-center gap-1.5"><HandHeart size={16} /> Impact Created: ₹5,12,000</span>
               <span>General Fund Goal</span>
             </div>
@@ -327,8 +327,8 @@ export default function Home() {
       </section>
 
       {/* Gallery Preview */}
-      <section className="py-24 bg-light">
-        <div className="max-w-7xl mx-auto px-6 text-center">
+      <section className="py-24 bg-light text-center">
+        <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-bold mb-4 text-dark relative inline-block pb-4 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-16 after:h-1 after:bg-saffron">Journey Highlights</h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-16">Glimpses of our recent community gatherings and cultural initiatives.</p>
           
