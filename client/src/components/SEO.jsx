@@ -5,9 +5,20 @@ export default function SEO({ title, description, image, url }) {
   const fullTitle = `${title} | ${siteTitle}`;
   const defaultDescription = "HinduVahini is a cultural NGO dedicated to preserving our rich heritage, advancing educational empowerment, and creating a sustainable positive impact on society.";
   const metaDescription = description || defaultDescription;
+  
+  // Base configuration
   const siteUrl = "https://hinduvahini.online";
-  const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
-  const metaImage = image ? `${siteUrl}${image}` : `${siteUrl}/our_vision.jpeg`;
+  
+  // Helper to ensure absolute URLs (crucial for WhatsApp/Facebook previews)
+  const getAbsoluteUrl = (path, defaultPath) => {
+    if (!path) return `${siteUrl}${defaultPath}`;
+    if (path.startsWith('http')) return path; // Already absolute (e.g. external wikimedia or full server path)
+    if (path.startsWith('/')) return `${siteUrl}${path}`; // Local relative path
+    return `${siteUrl}/${path}`; // Fallback for names without slash
+  };
+
+  const fullUrl = getAbsoluteUrl(url, '');
+  const metaImage = getAbsoluteUrl(image, '/our_vision.jpeg');
 
   return (
     <Helmet>
@@ -21,6 +32,7 @@ export default function SEO({ title, description, image, url }) {
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
       <meta property="og:image" content={metaImage} />
+      <meta property="og:image:secure_url" content={metaImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:site_name" content={siteTitle} />

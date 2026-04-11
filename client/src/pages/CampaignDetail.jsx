@@ -234,11 +234,11 @@ export default function CampaignDetail() {
                             <div className="space-y-4">
                                 <button 
                                     onClick={() => handleSponsor(null)}
-                                    className="w-full bg-saffron hover:bg-saffronLight text-white py-5 rounded-[22px] font-bold shadow-xl shadow-saffron/20 transition-all active:scale-95 flex items-center justify-center gap-3 text-lg"
+                                    className="w-full bg-saffron hover:bg-dark text-white py-5 rounded-[22px] font-black uppercase tracking-widest shadow-xl shadow-saffron/20 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 text-sm"
                                 >
                                     <HandHeart size={24} weight="fill" /> Contribute Custom
                                 </button>
-                                <p className="text-[10px] text-gray-400 text-center px-4 leading-relaxed font-bold uppercase tracking-tighter">
+                                <p className="text-[10px] text-gray-400 text-center px-4 leading-relaxed font-bold uppercase tracking-tight">
                                     Direct UPI contribution with instant photo verification
                                 </p>
                             </div>

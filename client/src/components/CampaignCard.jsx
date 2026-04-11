@@ -25,7 +25,7 @@ const CampaignCard = ({ campaign }) => {
     };
 
     return (
-        <div className="bg-white rounded-[32px] overflow-hidden shadow-soft border border-gray-100 group hover:shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full relative">
+        <div className="bg-white rounded-[32px] overflow-hidden shadow-soft border border-gray-100 group hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-all duration-500 flex flex-col h-full relative">
             {/* Image Section */}
             <div className="relative h-56 overflow-hidden">
                 <img 
@@ -93,9 +93,9 @@ const CampaignCard = ({ campaign }) => {
                     <div className="flex items-center gap-2 pt-2">
                         <Link 
                             to={`/campaigns/${campaign.id}`}
-                            className="flex-1 bg-dark text-white text-center py-3.5 rounded-2xl text-xs font-bold hover:bg-dark/90 transition-all flex items-center justify-center gap-2"
+                            className="flex-1 bg-saffron hover:bg-dark text-white text-center py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-saffron/10"
                         >
-                            Contribute Now <HandHeart size={16} weight="fill" />
+                            Contribute Now <HandHeart size={18} weight="fill" />
                         </Link>
                     </div>
                 </div>
