@@ -11,5 +11,5 @@ UPDATE admins SET role = 'admin' WHERE email = 'admin@hinduvahini.online';
 -- 3. Seed the new Sub-Admin account
 -- Password is the same as requested, already hashed: $2b$10$j9.ASVHiWcxxlyPP1Hih.O5aAYrRz5RIfSL/J4RFGBsz/NbmtuQ2.
 INSERT INTO admins (name, email, phone, password, role) 
-VALUES ('Sub Admin Ashwani', 'subadmin@hinduvahini.online', '9911991199', '$2b$10$j9.ASVHiWcxxlyPP1Hih.O5aAYrRz5RIfSL/J4RFGBsz/NbmtuQ2.', 'sub-admin')
+VALUES ('Ashwani', 'ashwani@hinduvahini.online', '9911991199', '$2b$10$j9.ASVHiWcxxlyPP1Hih.O5aAYrRz5RIfSL/J4RFGBsz/NbmtuQ2.', 'sub-admin')
 ON DUPLICATE KEY UPDATE role='sub-admin';
