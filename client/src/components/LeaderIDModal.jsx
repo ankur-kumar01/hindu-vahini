@@ -1,8 +1,10 @@
-import { X, Copy, WhatsappLogo, Check, ShareNetwork, IdentificationCard, Phone, MapPin } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { X, Copy, WhatsappLogo, Check, ShareNetwork, IdentificationCard, Phone, MapPin, ArrowLineDown } from '@phosphor-icons/react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function LeaderIDModal({ leader, onClose }) {
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const cardRef = useRef(null);
 
   useEffect(() => {
     if (leader) {
@@ -34,6 +36,29 @@ export default function LeaderIDModal({ leader, onClose }) {
     window.open(url, '_blank');
   };
 
+  const downloadCard = async () => {
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 3, // High resolution
+        useCORS: true,
+        backgroundColor: '#f9fafb',
+        logging: false,
+      });
+      const link = document.createElement('a');
+      link.download = `HinduVahini-ID-${leader.name.replace(/\s+/g, '-')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert('Download failed. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const isNational = !leader.state || leader.state === 'National';
 
   return (
@@ -60,8 +85,8 @@ export default function LeaderIDModal({ leader, onClose }) {
         {/* Card — fluid width, capped for larger screens */}
         <div className="relative w-full max-w-xs sm:max-w-sm animation-scale-up mt-8 md:mt-0">
 
-          {/* ID Card */}
-          <div className="relative w-full bg-[#f9fafb] rounded-[20px] overflow-hidden shadow-2xl border-t-8 border-saffron shadow-black/40">
+          {/* ID Card — ref attached for html2canvas capture */}
+          <div ref={cardRef} className="relative w-full bg-[#f9fafb] rounded-[20px] overflow-hidden shadow-2xl border-t-8 border-saffron shadow-black/40">
 
             {/* Header */}
             <div className="h-14 bg-white flex items-center justify-center px-4 border-b border-gray-100">
@@ -162,6 +187,21 @@ export default function LeaderIDModal({ leader, onClose }) {
               title="Share on WhatsApp"
             >
               <WhatsappLogo size={20} weight="fill" />
+            </button>
+
+            <button
+              onClick={downloadCard}
+              disabled={downloading}
+              className={`flex items-center justify-center p-2.5 rounded-full transition-all shadow-md ${
+                downloading
+                  ? 'bg-gray-400 text-white cursor-not-allowed'
+                  : 'bg-saffron text-white hover:scale-110 active:scale-95'
+              }`}
+              title="Download ID Card"
+            >
+              {downloading
+                ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                : <ArrowLineDown size={20} weight="bold" />}
             </button>
           </div>
         </div>
