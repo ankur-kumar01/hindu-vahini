@@ -1,5 +1,6 @@
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import FloatingDonateButton from './components/FloatingDonateButton';
 
 export default function Layout({ children }) {
   return (
@@ -7,6 +8,7 @@ export default function Layout({ children }) {
       <Navbar />
       <main className="flex-grow w-full">{children}</main>
       <Footer />
+      <FloatingDonateButton />
     </div>
   );
 }
