@@ -28,6 +28,40 @@ app.use('/api/admin', require('./routes/admin'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Dynamic Sitemap.xml
+app.get('/sitemap.xml', async (req, res) => {
+    const siteUrl = `${req.protocol}://${req.get('host')}`;
+    try {
+        const [campaigns] = await query('SELECT id FROM campaigns WHERE status = "active"');
+        const [leaders] = await query('SELECT name FROM leaders');
+        
+        const staticRoutes = ['', '/leadership', '/gallery', '/donate', '/campaigns', '/join-us', '/contact'];
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+
+        // Static Pages
+        staticRoutes.forEach(route => {
+            xml += `\n  <url>\n    <loc>${siteUrl}${route}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>${route === '' ? '1.0' : '0.8'}</priority>\n  </url>`;
+        });
+
+        // Dynamic Campaigns
+        campaigns.forEach(c => {
+            xml += `\n  <url>\n    <loc>${siteUrl}/campaigns/${c.id}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>`;
+        });
+
+        // Dynamic Leadership Profiles
+        leaders.forEach(l => {
+            xml += `\n  <url>\n    <loc>${siteUrl}/leadership?leader=${encodeURIComponent(l.name)}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+        });
+
+        xml += `\n</urlset>`;
+        res.header('Content-Type', 'application/xml');
+        res.send(xml);
+    } catch (err) {
+        console.error('Sitemap Error:', err);
+        res.status(500).send('Error generating sitemap');
+    }
+});
+
 // SPA Catch-all Route with Bulletproof Dynamic OG Tag Injection
 app.get(/^(?!\/api).*/, async (req, res) => {
     const indexPath = path.resolve(__dirname, 'public', 'index.html');
