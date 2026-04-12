@@ -19,6 +19,10 @@ import AdminDonations from './admin/AdminDonations';
 import AdminProfile from './admin/AdminProfile';
 import AdminChangePassword from './admin/AdminChangePassword';
 
+// Mini Dashboard
+import DashboardPanel from './admin/DashboardPanel';
+import MiniGallery from './admin/MiniGallery';
+
 // Public Campaign Pages
 import CampaignList from './pages/CampaignList';
 import CampaignDetail from './pages/CampaignDetail';
@@ -38,7 +42,7 @@ function App() {
         <Route path="/contact" element={<Layout><Contact /></Layout>} />
 
         {/* Admin Routes - standalone, no Navbar/Footer */}
-        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/dashboard-login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />}>
           <Route index element={<AdminHome />} />
         </Route>
@@ -62,6 +66,11 @@ function App() {
         </Route>
         <Route path="/admin/change-password" element={<AdminDashboard />}>
           <Route index element={<AdminChangePassword />} />
+        </Route>
+
+        {/* Mini Management Dashboard */}
+        <Route path="/dashboard" element={<DashboardPanel />}>
+          <Route index element={<MiniGallery />} />
         </Route>
       </Routes>
     </Router>

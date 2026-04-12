@@ -38,7 +38,12 @@ export default function AdminLogin() {
       localStorage.setItem('admin_token', data.token);
       localStorage.setItem('admin_info', JSON.stringify(data.admin));
 
-      navigate('/admin/dashboard');
+      // Role-based Redirection
+      if (data.admin.role === 'sub-admin') {
+        navigate('/dashboard');
+      } else {
+        navigate('/admin/dashboard');
+      }
     } catch (err) {
       setError('Network error. Please check your connection.');
       setLoading(false);
@@ -57,7 +62,7 @@ export default function AdminLogin() {
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-saffron/10 border border-saffron/30 mb-5 shadow-[0_0_30px_rgba(255,153,51,0.15)]">
             <img src="/logo.png" alt="HinduVahini" className="w-12 h-12 rounded-full object-cover" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-1 font-heading">Admin Panel</h1>
+          <h1 className="text-3xl font-bold text-white mb-1 font-heading">Dashboard login</h1>
           <p className="text-gray-400 text-sm">HinduVahini Trust — Secured Access</p>
         </div>
 
@@ -85,7 +90,7 @@ export default function AdminLogin() {
                   value={form.email}
                   onChange={handleChange}
                   required
-                  placeholder="admin@hinduvahini.online"
+                  placeholder="ashwani@hinduvahini.online"
                   className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600 rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-saffron/60 focus:ring-2 focus:ring-saffron/20 transition-all text-sm"
                 />
               </div>
@@ -132,7 +137,7 @@ export default function AdminLogin() {
               ) : (
                 <>
                   <ShieldCheck size={18} weight="fill" />
-                  Sign In to Admin Panel
+                  Sign In to Dashboard
                 </>
               )}
             </button>

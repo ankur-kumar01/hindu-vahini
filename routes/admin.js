@@ -126,7 +126,7 @@ router.post('/login', async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: admin.id, email: admin.email, name: admin.name },
+            { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
             JWT_SECRET,
             { expiresIn: '8h' }
         );
@@ -138,7 +138,8 @@ router.post('/login', async (req, res) => {
                 name: admin.name,
                 email: admin.email,
                 phone: admin.phone,
-                avatar: admin.avatar
+                avatar: admin.avatar,
+                role: admin.role
             }
         });
 
@@ -153,7 +154,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
     try {
         const [rows] = await query(
-            'SELECT id, name, email, phone, avatar, created_at FROM admins WHERE id = ?',
+            'SELECT id, name, email, phone, avatar, role, created_at FROM admins WHERE id = ?',
             [req.admin.id]
         );
 
@@ -327,6 +328,11 @@ router.post('/gallery', authMiddleware, uploadGallery.single('image'), async (re
 // @route   DELETE /api/admin/gallery/:id
 router.delete('/gallery/:id', authMiddleware, async (req, res) => {
     try {
+        // Role check: Only admin can delete
+        if (req.admin.role !== 'admin') {
+            return res.status(403).json({ error: 'Permission denied. Only full admins can delete photos.' });
+        }
+
         await query('DELETE FROM gallery_images WHERE id=?', [req.params.id]);
         res.json({ message: 'Image deleted successfully.' });
     } catch (error) {

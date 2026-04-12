@@ -15,7 +15,7 @@ export default function AdminDashboard() {
     const info = localStorage.getItem('admin_info');
 
     if (!token || !info) {
-      navigate('/admin');
+      navigate('/dashboard-login');
       return;
     }
 
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
       .catch(() => {
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_info');
-        navigate('/admin');
+        navigate('/dashboard-login');
       });
   }, [navigate]);
 
