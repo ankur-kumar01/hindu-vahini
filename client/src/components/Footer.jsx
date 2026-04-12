@@ -57,9 +57,12 @@ export default function Footer() {
               </div>
             </div>
             
-            <p className="text-xs leading-relaxed text-white/60 font-medium italic">
-              "Mr. Ankur Kumar manages all tech stack of Hindu Vahini Globally."
-            </p>
+            <div className="bg-green-600/90 text-white px-4 py-2 rounded-xl border border-green-500/50 shadow-lg shadow-green-900/20 animation-pulse-subtle">
+              <p className="text-[11px] font-bold leading-tight flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-white rounded-full animate-blink shrink-0"></span>
+                सॉफ्टवेयर व वेबसाइट कार्य हेतु संपर्क करें
+              </p>
+            </div>
 
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-3">
