@@ -11,8 +11,9 @@ export default function MiniGallery() {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // Form State
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [uploadStatus, setUploadStatus] = useState('');
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,6 +22,45 @@ export default function MiniGallery() {
   useEffect(() => {
     fetchGallery();
   }, []);
+
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Max dimension 1200px
+          const MAX_SIZE = 1200;
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+          }, 'image/jpeg', 0.7); // 70% quality
+        };
+      };
+    });
+  };
 
   const totalPages = Math.ceil(images.length / itemsPerPage);
   const currentImages = images.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -38,43 +78,64 @@ export default function MiniGallery() {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result);
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setImageFiles(files);
+      setUploadStatus('');
+      
+      const filePreviews = [];
+      files.slice(0, 4).forEach(file => { // Preview only first 4
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          filePreviews.push(reader.result);
+          if (filePreviews.length === Math.min(files.length, 4)) {
+            setImagePreviews(filePreviews);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!imageFile) return;
+    if (imageFiles.length === 0) return;
 
     setSubmitting(true);
     const token = localStorage.getItem('admin_token');
     const data = new FormData();
-    data.append('image', imageFile);
-    // Default values for mini-uploader
-    data.append('span_classes', 'row-span-1 col-span-1');
-    data.append('display_order', 0);
 
     try {
-      const response = await fetch('/api/admin/gallery', {
+      setUploadStatus(`Optimizing 1 of ${imageFiles.length}...`);
+      
+      // Compress and add all files
+      for (let i = 0; i < imageFiles.length; i++) {
+        setUploadStatus(`Optimizing ${i + 1} of ${imageFiles.length}...`);
+        const compressed = await compressImage(imageFiles[i]);
+        data.append('images', compressed);
+      }
+
+      setUploadStatus('Sending to Cloud...');
+      const response = await fetch('/api/admin/gallery/bulk', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: data
       });
 
-      if (!response.ok) throw new Error('Upload failed');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
 
-      setImageFile(null);
-      setImagePreview(null);
+      setImageFiles([]);
+      setImagePreviews([]);
       setShowUploader(false);
-      setCurrentPage(1); // Go to first page to see new upload
+      setUploadStatus('');
+      setCurrentPage(1);
       fetchGallery();
     } catch (err) {
       alert(err.message);
+      setUploadStatus('Error!');
     } finally {
       setSubmitting(false);
     }
@@ -134,25 +195,41 @@ export default function MiniGallery() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="text-center mb-2">
-              <h3 className="text-sm font-black uppercase tracking-widest text-saffron">New Snap</h3>
-              <p className="text-[10px] text-gray-400 mt-1">Select or take a photo to add to gallery</p>
+              <h3 className="text-sm font-black uppercase tracking-widest text-saffron">
+                {imageFiles.length > 0 ? `${imageFiles.length} Snaps Ready` : 'New Snaps'}
+              </h3>
+              <p className="text-[10px] text-gray-400 mt-1">
+                {uploadStatus || 'Select up to 50 photos to add to gallery'}
+              </p>
             </div>
 
-            <div className={`relative h-64 w-full rounded-3xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-4 ${
-              imagePreview ? 'border-saffron bg-saffron/5' : 'border-white/10 bg-white/[0.02]'
+            <div className={`relative min-h-[16rem] w-full rounded-3xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center p-4 gap-4 ${
+              imagePreviews.length > 0 ? 'border-saffron bg-saffron/5' : 'border-white/10 bg-white/[0.02]'
             }`}>
-               {imagePreview ? (
-                 <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+               {imagePreviews.length > 0 ? (
+                 <div className="grid grid-cols-2 gap-2 w-full h-full">
+                    {imagePreviews.map((preview, idx) => (
+                      <div key={idx} className="aspect-video rounded-xl overflow-hidden border border-white/10 relative">
+                         <img src={preview} className="w-full h-full object-cover" alt="Preview" />
+                         {idx === 3 && imageFiles.length > 4 && (
+                           <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-black text-xs">
+                             +{imageFiles.length - 4} More
+                           </div>
+                         )}
+                      </div>
+                    ))}
+                 </div>
                ) : (
                  <>
                    <div className="p-5 bg-saffron/10 text-saffron rounded-full animate-pulse-subtle">
                       <UploadSimple size={36} />
                    </div>
-                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tap to Select Photo</p>
+                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tap to Select Photos</p>
                  </>
                )}
                <input 
                  type="file" 
+                 multiple
                  accept="image/*" 
                  onChange={handleImageChange}
                  className="absolute inset-0 opacity-0 cursor-pointer"
@@ -163,23 +240,24 @@ export default function MiniGallery() {
             <div className="flex gap-3">
                <button 
                  type="button" 
-                 onClick={() => { setShowUploader(false); setImagePreview(null); setImageFile(null); }}
-                 className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest"
+                 disabled={submitting}
+                 onClick={() => { setShowUploader(false); setImagePreviews([]); setImageFiles([]); setUploadStatus(''); }}
+                 className="flex-1 bg-white/5 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest disabled:opacity-30"
                >
                  Cancel
                </button>
                <button 
                  type="submit" 
-                 disabled={submitting || !imageFile}
+                 disabled={submitting || imageFiles.length === 0}
                  className="flex-[2] bg-saffron disabled:opacity-50 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-saffron/20"
                >
                  {submitting ? (
                    <>
                      <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                     Uploading...
+                     {uploadStatus || 'Uploading...'}
                    </>
                  ) : (
-                   'Post to Gallery'
+                   `Upload ${imageFiles.length || ''} Photos`
                  )}
                </button>
             </div>

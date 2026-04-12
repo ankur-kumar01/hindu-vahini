@@ -59,7 +59,7 @@ async function initDB() {
 
 async function query(sql, params) {
     if (!pool) await initDB();
-    return pool.execute(sql, params);
+    return pool.query(sql, params);
 }
 
 function getPool() {

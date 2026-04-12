@@ -325,6 +325,35 @@ router.post('/gallery', authMiddleware, uploadGallery.single('image'), async (re
     }
 });
 
+// @route   POST /api/admin/gallery/bulk
+router.post('/gallery/bulk', authMiddleware, uploadGallery.array('images', 50), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: 'No image files provided.' });
+        }
+
+        const values = req.files.map(file => [
+            `/uploads/gallery_img/${file.filename}`,
+            'row-span-1 col-span-1',
+            0
+        ]);
+
+        await query(
+            'INSERT INTO gallery_images (image_url, span_classes, display_order) VALUES ?',
+            [values]
+        );
+
+        res.status(201).json({ 
+            message: `${req.files.length} images added successfully.`,
+            count: req.files.length 
+        });
+    } catch (error) {
+        console.error('Bulk gallery upload error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+
 // @route   DELETE /api/admin/gallery/:id
 router.delete('/gallery/:id', authMiddleware, async (req, res) => {
     try {
