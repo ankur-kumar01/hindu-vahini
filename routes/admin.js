@@ -12,32 +12,54 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure uploads directory exists
+// Ensure uploads base directory exists
 const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// Multer Storage Configuration
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
+// Helper: ensure subfolder exists and return its path
+const ensureSubDir = (subFolder) => {
+    const dir = path.join(uploadDir, subFolder);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return dir;
+};
+
+// Image file filter (shared)
+const imageFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files are allowed.'));
+    }
+};
+
+// Leaders Storage → uploads/leaders_img/
+const leadersDir = ensureSubDir('leaders_img');
+const leadersStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, leadersDir),
+    filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
+        cb(null, 'leader-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB Limit
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed.'));
-        }
+const upload = multer({
+    storage: leadersStorage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: imageFilter
+});
+
+// Gallery Storage → uploads/gallery_img/
+const galleryDir = ensureSubDir('gallery_img');
+const galleryStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, galleryDir),
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'gallery-' + uniqueSuffix + path.extname(file.originalname));
     }
+});
+const uploadGallery = multer({
+    storage: galleryStorage,
+    limits: { fileSize: 8 * 1024 * 1024 }, // 8MB
+    fileFilter: imageFilter
 });
 
 // Campaign Specific Storage
@@ -234,7 +256,7 @@ router.put('/queries/:id/status', authMiddleware, async (req, res) => {
 router.post('/leaders', authMiddleware, upload.single('image'), async (req, res) => {
     try {
         const { name, role, designation, bio, phone, display_order, state, district } = req.body;
-        const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+        const image_url = req.file ? `/uploads/leaders_img/${req.file.filename}` : null;
         
         await query(
             'INSERT INTO leaders (name, role, designation, bio, image_url, phone, display_order, state, district) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -257,7 +279,7 @@ router.put('/leaders/:id', authMiddleware, upload.single('image'), async (req, r
         let params = [name, role, designation, bio, phone, display_order || 0, state || 'National', district || null, id];
 
         if (req.file) {
-            const image_url = `/uploads/${req.file.filename}`;
+            const image_url = `/uploads/leaders_img/${req.file.filename}`;
             sql = 'UPDATE leaders SET name=?, role=?, designation=?, bio=?, phone=?, display_order=?, state=?, district=?, image_url=? WHERE id=?';
             params = [name, role, designation, bio, phone, display_order || 0, state || 'National', district || null, image_url, id];
         }
@@ -282,13 +304,14 @@ router.delete('/leaders/:id', authMiddleware, async (req, res) => {
 });
 
 // @route   POST /api/admin/gallery
-router.post('/gallery', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/gallery', authMiddleware, uploadGallery.single('image'), async (req, res) => {
     try {
         const { span_classes, display_order } = req.body;
         
         if (!req.file) return res.status(400).json({ error: 'Image file is required.' });
         
-        const image_url = `/uploads/${req.file.filename}`;
+        const image_url = `/uploads/gallery_img/${req.file.filename}`;
+
         
         await query(
             'INSERT INTO gallery_images (image_url, span_classes, display_order) VALUES (?, ?, ?)',
