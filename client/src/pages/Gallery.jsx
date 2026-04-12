@@ -152,41 +152,45 @@ export default function Gallery() {
          )}
 
          {/* Pagination Controls */}
-         {totalPages > 1 && (
-           <div className="flex items-center justify-center gap-2 md:gap-4 mt-12 py-2">
-             <button
-               onClick={() => paginate(validPage - 1)}
-               disabled={validPage === 1}
-               className={`p-2 rounded-full border border-gray-200 transition-all ${validPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
-             >
-               <CaretLeft size={24} weight="bold" />
-             </button>
+        {totalPages > 1 && (
+          <div className="w-full flex items-center justify-center mt-12 py-2">
+            <div className="flex items-center gap-1 sm:gap-2 max-w-full flex-wrap justify-center">
 
-             <div className="flex items-center gap-2">
-               {getPageNumbers().map((page, i) => (
-                 page === '...' ? (
-                   <span key={`ellipsis-${i}`} className="w-8 h-8 flex items-center justify-center text-gray-400 font-bold">...</span>
-                 ) : (
-                   <button
-                     key={page}
-                     onClick={() => paginate(page)}
-                     className={`w-10 h-10 md:w-12 md:h-12 rounded-full font-bold transition-all border ${validPage === page ? 'bg-saffron border-saffron text-white shadow-md scale-110' : 'bg-white border-gray-200 text-gray-500 hover:border-saffron hover:text-saffron'}`}
-                   >
-                     {page}
-                   </button>
-                 )
-               ))}
-             </div>
+              {/* Prev Button */}
+              <button
+                onClick={() => paginate(validPage - 1)}
+                disabled={validPage === 1}
+                className={`p-1.5 sm:p-2 rounded-full border border-gray-200 transition-all shrink-0 ${validPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
+              >
+                <CaretLeft size={18} weight="bold" />
+              </button>
 
-             <button
-               onClick={() => paginate(validPage + 1)}
-               disabled={validPage === totalPages}
-               className={`p-2 rounded-full border border-gray-200 transition-all ${validPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
-             >
-               <CaretRight size={24} weight="bold" />
-             </button>
-           </div>
-         )}
+              {/* Page Numbers */}
+              {getPageNumbers().map((page, i) => (
+                page === '...' ? (
+                  <span key={`ellipsis-${i}`} className="w-6 sm:w-8 flex items-center justify-center text-gray-400 font-bold text-sm">…</span>
+                ) : (
+                  <button
+                    key={page}
+                    onClick={() => paginate(page)}
+                    className={`w-8 h-8 sm:w-10 sm:h-10 text-sm rounded-full font-bold transition-all border shrink-0 ${validPage === page ? 'bg-saffron border-saffron text-white shadow-md scale-105' : 'bg-white border-gray-200 text-gray-500 hover:border-saffron hover:text-saffron'}`}
+                  >
+                    {page}
+                  </button>
+                )
+              ))}
+
+              {/* Next Button */}
+              <button
+                onClick={() => paginate(validPage + 1)}
+                disabled={validPage === totalPages}
+                className={`p-1.5 sm:p-2 rounded-full border border-gray-200 transition-all shrink-0 ${validPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
+              >
+                <CaretRight size={18} weight="bold" />
+              </button>
+            </div>
+          </div>
+        )}
 
          {/* Image Modal */}
          {selectedImage && (
