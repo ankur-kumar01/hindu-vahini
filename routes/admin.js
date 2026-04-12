@@ -233,12 +233,12 @@ router.put('/queries/:id/status', authMiddleware, async (req, res) => {
 // @route   POST /api/admin/leaders
 router.post('/leaders', authMiddleware, upload.single('image'), async (req, res) => {
     try {
-        const { name, role, designation, bio, phone, display_order } = req.body;
+        const { name, role, designation, bio, phone, display_order, state, district } = req.body;
         const image_url = req.file ? `/uploads/${req.file.filename}` : null;
         
         await query(
-            'INSERT INTO leaders (name, role, designation, bio, image_url, phone, display_order) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [name, role, designation, bio, image_url, phone, display_order || 0]
+            'INSERT INTO leaders (name, role, designation, bio, image_url, phone, display_order, state, district) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [name, role, designation, bio, image_url, phone, display_order || 0, state || 'National', district || null]
         );
         res.status(201).json({ message: 'Leader added successfully.' });
     } catch (error) {
@@ -250,16 +250,16 @@ router.post('/leaders', authMiddleware, upload.single('image'), async (req, res)
 // @route   PUT /api/admin/leaders/:id
 router.put('/leaders/:id', authMiddleware, upload.single('image'), async (req, res) => {
     try {
-        const { name, role, designation, bio, phone, display_order } = req.body;
+        const { name, role, designation, bio, phone, display_order, state, district } = req.body;
         const { id } = req.params;
         
-        let sql = 'UPDATE leaders SET name=?, role=?, designation=?, bio=?, phone=?, display_order=? WHERE id=?';
-        let params = [name, role, designation, bio, phone, display_order || 0, id];
+        let sql = 'UPDATE leaders SET name=?, role=?, designation=?, bio=?, phone=?, display_order=?, state=?, district=? WHERE id=?';
+        let params = [name, role, designation, bio, phone, display_order || 0, state || 'National', district || null, id];
 
         if (req.file) {
             const image_url = `/uploads/${req.file.filename}`;
-            sql = 'UPDATE leaders SET name=?, role=?, designation=?, bio=?, phone=?, display_order=?, image_url=? WHERE id=?';
-            params = [name, role, designation, bio, phone, display_order || 0, image_url, id];
+            sql = 'UPDATE leaders SET name=?, role=?, designation=?, bio=?, phone=?, display_order=?, state=?, district=?, image_url=? WHERE id=?';
+            params = [name, role, designation, bio, phone, display_order || 0, state || 'National', district || null, image_url, id];
         }
 
         await query(sql, params);

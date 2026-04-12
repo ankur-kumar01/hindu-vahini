@@ -1,4 +1,4 @@
-import { CrownSimple, Phone } from '@phosphor-icons/react';
+import { CrownSimple, Phone, MapPin } from '@phosphor-icons/react';
 
 export default function LeaderCard({ leader, isVertical = false, onClick }) {
   return (
@@ -19,7 +19,18 @@ export default function LeaderCard({ leader, isVertical = false, onClick }) {
       </div>
       <div className="p-6">
         <h3 className="text-xl font-bold mb-1 group-hover:text-saffron transition-colors">{leader.name}</h3>
-        <span className="text-sm font-semibold text-saffron block mb-3">{leader.role}</span>
+        <span className="text-sm font-semibold text-saffron block mb-1">{leader.role}</span>
+        {leader.state && leader.state !== 'National' && (
+          <div className="flex items-center gap-1 mb-3">
+            <MapPin size={12} className="text-gray-400" weight="fill" />
+            <span className="text-xs text-gray-400 font-medium">
+              {leader.district ? `${leader.district}, ` : ''}{leader.state}
+            </span>
+          </div>
+        )}
+        {(!leader.state || leader.state === 'National') && (
+          <span className="inline-block text-[9px] font-bold uppercase tracking-wider text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200 mb-3">🇮🇳 National</span>
+        )}
         <p className="text-gray-600 text-sm mb-5 leading-relaxed">{leader.bio}</p>
         <div className="flex flex-col gap-2">
           {leader.phone && (

@@ -21,6 +21,8 @@ const AdminLeaders = () => {
     designation: '',
     bio: '',
     phone: '',
+    state: 'National',
+    district: '',
     display_order: 0
   });
   const [imageFile, setImageFile] = useState(null);
@@ -54,6 +56,8 @@ const AdminLeaders = () => {
       designation: leader.designation || '',
       bio: leader.bio || '',
       phone: leader.phone || '',
+      state: leader.state || 'National',
+      district: leader.district || '',
       display_order: leader.display_order || 0
     });
     setImagePreview(leader.image_url);
@@ -68,6 +72,8 @@ const AdminLeaders = () => {
       designation: '',
       bio: '',
       phone: '',
+      state: 'National',
+      district: '',
       display_order: leaders.length
     });
     setImageFile(null);
@@ -185,6 +191,7 @@ const AdminLeaders = () => {
                 <tr className="bg-white/5 border-b border-white/10">
                   <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Leader</th>
                   <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Designation & Role</th>
+                  <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Location</th>
                   <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400">Contact</th>
                   <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 text-center">Order</th>
                   <th className="p-4 text-xs font-bold uppercase tracking-wider text-gray-400 text-right">Actions</th>
@@ -209,6 +216,10 @@ const AdminLeaders = () => {
                     <td className="p-4">
                       <p className="text-saffron font-bold text-sm tracking-tight">{leader.designation}</p>
                       <p className="text-gray-400 text-xs">{leader.role}</p>
+                    </td>
+                    <td className="p-4">
+                      <p className="text-gray-300 text-xs font-bold">{leader.state || 'National'}</p>
+                      {leader.district && <p className="text-gray-500 text-xs">{leader.district}</p>}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-1.5 text-gray-400 text-sm">
@@ -374,6 +385,30 @@ const AdminLeaders = () => {
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     placeholder="e.g., +91 99999 00000"
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-saffron/50 transition-all font-medium"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">State / Region</label>
+                  <select
+                    disabled={submitting}
+                    value={formData.state}
+                    onChange={(e) => setFormData({...formData, state: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-saffron/50 transition-all font-medium"
+                  >
+                    {['National','Uttar Pradesh','Haryana','Delhi','Uttarakhand','Bihar','Maharashtra'].map(s => (
+                      <option key={s} value={s} className="bg-[#1a1a1a]">{s}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">District</label>
+                  <input 
+                    type="text" 
+                    disabled={submitting || formData.state === 'National'}
+                    value={formData.district}
+                    onChange={(e) => setFormData({...formData, district: e.target.value})}
+                    placeholder={formData.state === 'National' ? 'N/A for National' : 'e.g., Lucknow'}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-saffron/50 transition-all font-medium disabled:opacity-40"
                   />
                 </div>
               </div>

@@ -74,6 +74,44 @@ export default function Gallery() {
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
+  const getPageNumbers = () => {
+    const pages = [];
+    const windowSize = 1; // Pages to show around current
+    
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      // Always show first
+      pages.push(1);
+      
+      if (validPage > windowSize + 3) {
+        pages.push('...');
+      }
+      
+      const start = Math.max(2, validPage - windowSize);
+      const end = Math.min(totalPages - 1, validPage + windowSize);
+      
+      // If we are near the start, extend the end
+      let finalStart = start;
+      let finalEnd = end;
+      if (validPage <= windowSize + 2) finalEnd = Math.min(totalPages - 1, windowSize * 2 + 3);
+      // If we are near the end, extend the start
+      if (validPage >= totalPages - (windowSize + 1)) finalStart = Math.max(2, totalPages - (windowSize * 2 + 2));
+
+      for (let i = finalStart; i <= finalEnd; i++) {
+        pages.push(i);
+      }
+      
+      if (validPage < totalPages - (windowSize + 2)) {
+        pages.push('...');
+      }
+      
+      // Always show last
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   const indexOfLastItem = validPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = galleryImages.slice(indexOfFirstItem, indexOfLastItem);
@@ -115,7 +153,7 @@ export default function Gallery() {
 
          {/* Pagination Controls */}
          {totalPages > 1 && (
-           <div className="flex items-center justify-center gap-2 md:gap-4 mt-12 overflow-x-auto py-2">
+           <div className="flex items-center justify-center gap-2 md:gap-4 mt-12 py-2">
              <button
                onClick={() => paginate(validPage - 1)}
                disabled={validPage === 1}
@@ -125,14 +163,18 @@ export default function Gallery() {
              </button>
 
              <div className="flex items-center gap-2">
-               {[...Array(totalPages)].map((_, i) => (
-                 <button
-                   key={i}
-                   onClick={() => paginate(i + 1)}
-                   className={`w-10 h-10 md:w-12 md:h-12 rounded-full font-bold transition-all border ${validPage === i + 1 ? 'bg-saffron border-saffron text-white shadow-md scale-110' : 'bg-white border-gray-200 text-gray-500 hover:border-saffron hover:text-saffron'}`}
-                 >
-                   {i + 1}
-                 </button>
+               {getPageNumbers().map((page, i) => (
+                 page === '...' ? (
+                   <span key={`ellipsis-${i}`} className="w-8 h-8 flex items-center justify-center text-gray-400 font-bold">...</span>
+                 ) : (
+                   <button
+                     key={page}
+                     onClick={() => paginate(page)}
+                     className={`w-10 h-10 md:w-12 md:h-12 rounded-full font-bold transition-all border ${validPage === page ? 'bg-saffron border-saffron text-white shadow-md scale-110' : 'bg-white border-gray-200 text-gray-500 hover:border-saffron hover:text-saffron'}`}
+                   >
+                     {page}
+                   </button>
+                 )
                ))}
              </div>
 
