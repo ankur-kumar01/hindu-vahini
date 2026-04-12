@@ -12,9 +12,9 @@ export default function SEO({ title, description, image, url }) {
   // Helper to ensure absolute URLs (crucial for WhatsApp/Facebook previews)
   const getAbsoluteUrl = (path, defaultPath) => {
     if (!path) return `${siteUrl}${defaultPath}`;
-    if (path.startsWith('http')) return path; // Already absolute (e.g. external wikimedia or full server path)
-    if (path.startsWith('/')) return `${siteUrl}${path}`; // Local relative path
-    return `${siteUrl}/${path}`; // Fallback for names without slash
+    if (path.startsWith('http')) return path; 
+    // Handle both cases: path starts with / or not
+    return `${siteUrl}${path.startsWith('/') ? '' : '/'}${path}`;
   };
 
   const fullUrl = getAbsoluteUrl(url, '');

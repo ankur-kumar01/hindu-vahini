@@ -41,11 +41,22 @@ app.get(/^(?!\/api).*/, async (req, res) => {
     const getAbsoluteUrl = (img) => {
         if (!img) return `${siteUrl}/our_vision.jpeg`;
         if (img.startsWith('http')) return img;
+        // Handle images starting with / and those that don't
         return `${siteUrl}${img.startsWith('/') ? '' : '/'}${img}`;
     };
 
+    // Simple HTML escaper to prevent breakage in content attributes
+    const escapeHtml = (unsafe) => {
+        if (!unsafe) return "";
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    };
+
     try {
-        let metaTags = '';
         let title = "HinduVahini | Preserving Culture, Empowering Communities";
         let description = "HinduVahini is a cultural NGO dedicated to preserving our rich heritage and advancing educational empowerment.";
         let image = "/our_vision.jpeg";
@@ -82,23 +93,28 @@ app.get(/^(?!\/api).*/, async (req, res) => {
         }
 
         const fullImgUrl = getAbsoluteUrl(image);
-        metaTags = `
-            <title>${title}</title>
-            <meta name="description" content="${description}" />
-            <meta property="og:title" content="${title}" />
-            <meta property="og:description" content="${description}" />
+        const escapedTitle = escapeHtml(title);
+        const escapedDesc = escapeHtml(description);
+        
+        const metaTags = `
+            <title>${escapedTitle}</title>
+            <meta name="description" content="${escapedDesc}" />
+            <meta property="og:title" content="${escapedTitle}" />
+            <meta property="og:description" content="${escapedDesc}" />
             <meta property="og:image" content="${fullImgUrl}" />
             <meta property="og:image:secure_url" content="${fullImgUrl}" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
             <meta property="og:url" content="${siteUrl}${req.originalUrl}" />
             <meta property="og:type" content="website" />
+            <meta property="og:site_name" content="HinduVahini" />
             <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content="${title}" />
-            <meta name="twitter:description" content="${description}" />
+            <meta name="twitter:title" content="${escapedTitle}" />
+            <meta name="twitter:description" content="${escapedDesc}" />
             <meta name="twitter:image" content="${fullImgUrl}" />
         `;
 
         const data = await fs.promises.readFile(indexPath, 'utf8');
-        // Inject meta tags into the head, replacing any existing title/desc if possible or just prepending
         const updatedHtml = data
             .replace(/<title>.*?<\/title>/, '') // Remove default title
             .replace('<head>', `<head>${metaTags}`);
