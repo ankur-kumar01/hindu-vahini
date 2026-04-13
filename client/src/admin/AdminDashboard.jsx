@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, NavLink, Outlet } from 'react-router-dom';
 import {
-  House, User, LockKey, SignOut, List, X, ShieldCheck, Bell, Envelope, Users, Images, Megaphone, HandHeart, IdentificationCard
+  House, User, LockKey, SignOut, List, X, ShieldCheck, Bell, Envelope, Users, Images, Megaphone, HandHeart, IdentificationCard, Code
 } from '@phosphor-icons/react';
 
 export default function AdminDashboard() {
@@ -58,6 +58,7 @@ export default function AdminDashboard() {
   const navItems = [
     { to: '/admin/dashboard', icon: House, label: 'Dashboard' },
     { to: '/admin/members', icon: IdentificationCard, label: 'Membership Requests' },
+    { to: '/admin/development-requests', icon: Code, label: 'Development Requests' },
     { to: '/admin/leaders', icon: Users, label: 'Manage Leaders' },
     { to: '/admin/gallery', icon: Images, label: 'Manage Gallery' },
     { to: '/admin/campaigns', icon: Megaphone, label: 'Manage Campaigns' },

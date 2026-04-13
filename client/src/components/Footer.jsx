@@ -64,21 +64,21 @@ export default function Footer() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-saffron/10 flex items-center justify-center text-saffron shadow-sm">
-                  <Phone size={14} weight="fill" />
-                </div>
-                <a href="tel:+917518421180" className="text-white font-bold text-sm tracking-wide hover:text-saffron transition-colors">+91 75184 21180</a>
-              </div>
+            <div className="flex flex-nowrap items-center gap-2 mt-2 w-full">
+              <Link 
+                to="/developer"
+                className="flex-1 flex items-center justify-center gap-1 sm:gap-2 bg-[#25D366] text-white px-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#25D366]/20 whitespace-nowrap text-center"
+              >
+                <Code size={14} weight="bold" /> Contact
+              </Link>
               
               <a 
                 href="https://wa.me/917518421180?text=Hi,%20Hindu%20Vahini%20Team" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#25D366]/20 w-max"
+                className="flex-1 flex items-center justify-center gap-1 sm:gap-2 bg-[#25D366] text-white px-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[#25D366]/20 whitespace-nowrap text-center"
               >
-                <WhatsappLogo size={16} weight="fill" /> Chat
+                <WhatsappLogo size={14} weight="fill" /> Chat
               </a>
             </div>
           </div>

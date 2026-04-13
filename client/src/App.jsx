@@ -6,6 +6,7 @@ import Gallery from './pages/Gallery';
 import Donate from './pages/Donate';
 import JoinUs from './pages/JoinUs';
 import Contact from './pages/Contact';
+import DeveloperProfile from './pages/DeveloperProfile';
 
 // Admin Panel
 import AdminLogin from './admin/AdminLogin';
@@ -14,6 +15,7 @@ import AdminHome from './admin/AdminHome';
 import AdminQueries from './admin/AdminQueries';
 import AdminLeaders from './admin/AdminLeaders';
 import AdminGallery from './admin/AdminGallery';
+import AdminDevRequests from './admin/AdminDevRequests';
 import MembershipRequests from './admin/MembershipRequests';
 import AdminCampaigns from './admin/AdminCampaigns';
 import AdminDonations from './admin/AdminDonations';
@@ -41,6 +43,7 @@ function App() {
         <Route path="/campaigns/:id" element={<Layout><CampaignDetail /></Layout>} />
         <Route path="/join-us" element={<Layout><JoinUs /></Layout>} />
         <Route path="/contact" element={<Layout><Contact /></Layout>} />
+        <Route path="/developer" element={<Layout><DeveloperProfile /></Layout>} />
 
         {/* Admin Routes - standalone, no Navbar/Footer */}
         <Route path="/dashboard-login" element={<AdminLogin />} />
@@ -49,6 +52,9 @@ function App() {
         </Route>
         <Route path="/admin/queries" element={<AdminDashboard />}>
           <Route index element={<AdminQueries />} />
+        </Route>
+        <Route path="/admin/development-requests" element={<AdminDashboard />}>
+          <Route index element={<AdminDevRequests />} />
         </Route>
         <Route path="/admin/leaders" element={<AdminDashboard />}>
           <Route index element={<AdminLeaders />} />

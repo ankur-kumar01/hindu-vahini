@@ -193,5 +193,25 @@ router.post('/donations/verify', uploadProof.single('proof_image'), async (req, 
     }
 });
 
+// @route   POST /api/dev_requests
+// @desc    Register a new development request
+router.post('/dev_requests', async (req, res) => {
+    const { name, phone, city, state, country, request_text } = req.body;
+
+    if (!name || !phone || !city || !state) {
+        return res.status(400).json({ error: 'Name, Phone, City, and State are required.' });
+    }
+
+    try {
+        const sql = 'INSERT INTO development_requests (name, phone, city, state, country, request_text, status) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        await query(sql, [name, phone, city, state, country || 'India', request_text || null, 'pending']);
+        
+        res.status(201).json({ message: 'Development request submitted successfully! Pending approval.' });
+    } catch (error) {
+        console.error('API Error (Dev Requests):', error.message);
+        res.status(500).json({ error: 'Internal server error. Please try again later.' });
+    }
+});
+
 module.exports = router;
 

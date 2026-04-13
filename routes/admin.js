@@ -584,4 +584,53 @@ router.delete('/members/:id', authMiddleware, async (req, res) => {
     }
 });
 
+// ==============================
+// DEVELOPMENT REQUEST MANAGEMENT
+// ==============================
+
+// @route   GET /api/admin/dev_requests
+router.get('/dev_requests', authMiddleware, async (req, res) => {
+    try {
+        const [rows] = await query('SELECT * FROM development_requests ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error('Admin fetch dev requests error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   PUT /api/admin/dev_requests/:id/status
+router.put('/dev_requests/:id/status', authMiddleware, async (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    if (!['accepted', 'pending', 'rejected'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status.' });
+    }
+
+    try {
+        const [result] = await query('UPDATE development_requests SET status = ? WHERE id = ?', [status, id]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Development request not found.' });
+        }
+
+        res.json({ message: `Dev request status updated to ${status}.` });
+    } catch (error) {
+        console.error('Admin update dev status error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   DELETE /api/admin/dev_requests/:id
+router.delete('/dev_requests/:id', authMiddleware, async (req, res) => {
+    try {
+        await query('DELETE FROM development_requests WHERE id=?', [req.params.id]);
+        res.json({ message: 'Development request deleted successfully.' });
+    } catch (error) {
+        console.error('Delete dev request error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
 module.exports = router;
