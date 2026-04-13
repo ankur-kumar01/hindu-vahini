@@ -100,7 +100,7 @@ const Contact = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Call Us</h3>
               <p className="text-gray-600">
-                Support: +91 98765 43210<br />
+                Support: +91 99355 68569<br />
                 Mon-Fri, 9am to 6pm
               </p>
             </div>

@@ -6,17 +6,8 @@ export default function FloatingDonateButton() {
     const navigate = useNavigate();
     const pathname = location.pathname;
 
-    // Visibility Logic:
-    // 1. Hide on Campaign Detail pages (e.g., /campaigns/123)
-    // 2. Hide on Donate page itself
-    // 3. Hide on Admin routes
-    const isCampaignDetail = /^\/campaigns\/.+/.test(pathname);
-    const isDonatePage = pathname === '/donate';
-    const isAdminPage = pathname.startsWith('/admin');
-
-    if (isCampaignDetail || isDonatePage || isAdminPage) {
-        return null;
-    }
+    // Temporarily disabled as requested
+    return null;
 
     return (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl animation-slide-up">
