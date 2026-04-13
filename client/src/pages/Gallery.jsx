@@ -11,6 +11,7 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [likingId, setLikingId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [burstId, setBurstId] = useState(null);
   const [visibleCount, setVisibleCount] = useState(10);
   const [selectedImage, setSelectedImage] = useState(null);
   
@@ -101,7 +102,9 @@ export default function Gallery() {
       if (clickTimeout.current) clearTimeout(clickTimeout.current);
       handleLike(img.id);
       
-      // Optional: Visual 'Heart' flash here could be added later
+      // Visual Heart flash animation
+      setBurstId(img.id);
+      setTimeout(() => setBurstId(null), 800);
     } else if (event.detail === 1) {
       // Single tap - slight delay to wait and see if it becomes a double tap
       clickTimeout.current = setTimeout(() => {
@@ -199,6 +202,13 @@ export default function Gallery() {
                 <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[1px] pointer-events-none">
                   <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-sm shadow-xl">Double Tap to Like</span>
                 </div>
+
+                {/* Animated Double-Tap Heart */}
+                {burstId === img.id && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 animation-scale-up">
+                     <Heart size={120} weight="fill" className="text-white/90 drop-shadow-2xl opacity-90 animate-pulse-subtle" />
+                  </div>
+                )}
               </div>
 
               {/* Action Bar */}

@@ -209,10 +209,10 @@ export default function DonationModal({
                       <Check size={18} weight="bold" /> Pay Via UPI App
                     </a>
                     <button 
-                        onClick={() => amount > 0 && campaignId ? setStep(2) : amount > 0 ? onClose() : null}
+                        onClick={() => amount > 0 ? setStep(2) : null}
                         className={`w-full py-4 rounded-3xl text-sm font-bold text-white shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${amount > 0 ? 'bg-dark hover:bg-dark/90 shadow-dark/20' : 'bg-gray-200 pointer-events-none'}`}
                     >
-                        {campaignId ? 'I Have Paid' : 'Close After Payment'}
+                        I Have Paid
                         <PaperPlaneTilt size={18} weight="fill" />
                     </button>
                 </div>

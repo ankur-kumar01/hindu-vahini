@@ -40,17 +40,17 @@ export default function ImageModal({ image, onClose }) {
         onClick={onClose}
       ></div>
       
+      {/* Close Button - Fixed to viewport */}
+      <button 
+        onClick={onClose} 
+        className="fixed top-4 right-4 md:top-6 md:right-6 p-2 md:p-3 bg-black/40 hover:bg-black/60 rounded-full text-white hover:text-saffron transition-colors z-[110] pointer-events-auto shadow-xl"
+        aria-label="Close Preview"
+      >
+        <X size={24} className="md:w-8 md:h-8" weight="bold" />
+      </button>
+
       {/* Modal Content */}
       <div className="relative w-full max-w-5xl max-h-full flex flex-col items-center justify-center animation-scale-up pointer-events-none">
-        
-        {/* Close Button */}
-        <button 
-          onClick={onClose} 
-          className="absolute -top-12 right-0 md:-top-2 md:-right-12 p-3 text-white hover:text-saffron transition-colors pointer-events-auto"
-          aria-label="Close Preview"
-        >
-          <X size={32} weight="bold" />
-        </button>
 
         {/* Image Container */}
         <div className="relative bg-dark/20 rounded-2xl overflow-hidden shadow-2xl pointer-events-auto mb-6">

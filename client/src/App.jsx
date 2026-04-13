@@ -37,7 +37,7 @@ function App() {
         {/* Public Routes - with Navbar/Footer */}
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/leadership" element={<Layout><Leadership /></Layout>} />
-        <Route path="/gallery" element={<Layout hideFooter={true}><Gallery /></Layout>} />
+        <Route path="/gallery" element={<Layout hideFooter={true} hideFloatingDonate={true}><Gallery /></Layout>} />
         <Route path="/donate" element={<Layout><Donate /></Layout>} />
         <Route path="/campaigns" element={<Layout><CampaignList /></Layout>} />
         <Route path="/campaigns/:id" element={<Layout><CampaignDetail /></Layout>} />
