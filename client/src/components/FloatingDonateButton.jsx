@@ -6,9 +6,6 @@ export default function FloatingDonateButton() {
     const navigate = useNavigate();
     const pathname = location.pathname;
 
-    // Temporarily disabled as requested
-    return null;
-
     return (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/90 backdrop-blur-xl border-t border-gray-200/30 shadow-2xl animation-slide-up">
             <button 

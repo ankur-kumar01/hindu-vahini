@@ -14,6 +14,7 @@ import AdminHome from './admin/AdminHome';
 import AdminQueries from './admin/AdminQueries';
 import AdminLeaders from './admin/AdminLeaders';
 import AdminGallery from './admin/AdminGallery';
+import MembershipRequests from './admin/MembershipRequests';
 import AdminCampaigns from './admin/AdminCampaigns';
 import AdminDonations from './admin/AdminDonations';
 import AdminProfile from './admin/AdminProfile';
@@ -60,6 +61,9 @@ function App() {
         </Route>
         <Route path="/admin/donations" element={<AdminDashboard />}>
           <Route index element={<AdminDonations />} />
+        </Route>
+        <Route path="/admin/members" element={<AdminDashboard />}>
+          <Route index element={<MembershipRequests />} />
         </Route>
         <Route path="/admin/profile" element={<AdminDashboard />}>
           <Route index element={<AdminProfile />} />

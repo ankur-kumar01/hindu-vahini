@@ -532,5 +532,56 @@ router.put('/donations/:id/status', authMiddleware, async (req, res) => {
     }
 });
 
-module.exports = router;
+// ==============================
+// MEMBERSHIP MANAGEMENT ROUTES
+// ==============================
 
+// @route   GET /api/admin/members
+// @desc    Get all membership requests
+router.get('/members', authMiddleware, async (req, res) => {
+    try {
+        const [rows] = await query('SELECT * FROM members ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error('Admin fetch members error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   PUT /api/admin/members/:id/status
+// @desc    Approve/Reject a membership request
+router.put('/members/:id/status', authMiddleware, async (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    if (!['approved', 'pending', 'rejected'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status.' });
+    }
+
+    try {
+        const [result] = await query('UPDATE members SET status = ? WHERE id = ?', [status, id]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Membership request not found.' });
+        }
+
+        res.json({ message: `Membership status updated to ${status}.` });
+    } catch (error) {
+        console.error('Admin update membership status error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   DELETE /api/admin/members/:id
+// @desc    Delete a membership request
+router.delete('/members/:id', authMiddleware, async (req, res) => {
+    try {
+        await query('DELETE FROM members WHERE id=?', [req.params.id]);
+        res.json({ message: 'Membership request deleted successfully.' });
+    } catch (error) {
+        console.error('Delete member error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+module.exports = router;

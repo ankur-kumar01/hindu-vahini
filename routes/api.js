@@ -34,19 +34,24 @@ const uploadProof = multer({
 });
 
 // @route   POST /api/members
-// @desc    Register a new member
-router.post('/members', async (req, res) => {
-    const { name, email, phone, city, interests, message } = req.body;
+// @desc    Register a new member with payment proof
+router.post('/members', uploadProof.single('proof_image'), async (req, res) => {
+    const { name, phone, city, state, country, membership_type, amount } = req.body;
+    const proof_image_url = req.file ? `/uploads/donation_proofs/${req.file.filename}` : null;
 
-    if (!name || !email) {
-        return res.status(400).json({ error: 'Name and Email are required.' });
+    if (!name || !phone || !membership_type || !amount) {
+        return res.status(400).json({ error: 'Name, Phone, Membership Type, and Amount are required.' });
+    }
+
+    if (!proof_image_url) {
+        return res.status(400).json({ error: 'Please upload a Payment Screenshot as proof of transaction.' });
     }
 
     try {
-        const sql = 'INSERT INTO members (name, email, phone, city, interests, message) VALUES (?, ?, ?, ?, ?, ?)';
-        await query(sql, [name, email, phone, city, interests, message]);
+        const sql = 'INSERT INTO members (name, phone, city, state, country, membership_type, amount, proof_image_url, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        await query(sql, [name, phone, city, state || null, country || 'India', membership_type, amount, proof_image_url, 'pending']);
         
-        res.status(201).json({ message: 'Membership application submitted successfully!' });
+        res.status(201).json({ message: 'Membership application submitted successfully! Pending approval.' });
     } catch (error) {
         console.error('API Error (Members):', error.message);
         res.status(500).json({ error: 'Internal server error. Please try again later.' });
