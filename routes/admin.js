@@ -307,16 +307,15 @@ router.delete('/leaders/:id', authMiddleware, async (req, res) => {
 // @route   POST /api/admin/gallery
 router.post('/gallery', authMiddleware, uploadGallery.single('image'), async (req, res) => {
     try {
-        const { span_classes, display_order } = req.body;
+        const { span_classes, display_order, title, description, is_promoted } = req.body;
         
         if (!req.file) return res.status(400).json({ error: 'Image file is required.' });
         
         const image_url = `/uploads/gallery_img/${req.file.filename}`;
-
         
         await query(
-            'INSERT INTO gallery_images (image_url, span_classes, display_order) VALUES (?, ?, ?)',
-            [image_url, span_classes || 'row-span-1 col-span-1', display_order || 0]
+            'INSERT INTO gallery_images (image_url, span_classes, display_order, title, description, is_promoted) VALUES (?, ?, ?, ?, ?, ?)',
+            [image_url, span_classes || 'row-span-1 col-span-1', display_order || 0, title || null, description || null, is_promoted === 'true' || is_promoted === true]
         );
         res.status(201).json({ message: 'Image added successfully.' });
     } catch (error) {
@@ -366,6 +365,19 @@ router.delete('/gallery/:id', authMiddleware, async (req, res) => {
         res.json({ message: 'Image deleted successfully.' });
     } catch (error) {
         console.error('Delete gallery error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// @route   PUT /api/admin/gallery/:id/promote
+// @desc    Toggle promote status uniquely for the social UI
+router.put('/gallery/:id/promote', authMiddleware, async (req, res) => {
+    try {
+        const { is_promoted } = req.body;
+        await query('UPDATE gallery_images SET is_promoted = ? WHERE id = ?', [is_promoted === true, req.params.id]);
+        res.json({ message: 'Gallery image promotion status updated.' });
+    } catch (error) {
+        console.error('Update promote error:', error.message);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });

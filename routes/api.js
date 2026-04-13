@@ -213,5 +213,19 @@ router.post('/dev_requests', async (req, res) => {
     }
 });
 
-module.exports = router;
+// @route   PUT /api/gallery/:id/like
+// @desc    Increment likes for a social gallery image
+router.put('/gallery/:id/like', async (req, res) => {
+    try {
+        const [result] = await query('UPDATE gallery_images SET likes = likes + 1 WHERE id = ?', [req.params.id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Gallery image not found.' });
+        }
+        res.json({ message: 'Like successfully captured.' });
+    } catch (error) {
+        console.error('Gallery like error:', error.message);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
 
+module.exports = router;

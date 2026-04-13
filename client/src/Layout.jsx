@@ -2,12 +2,12 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingDonateButton from './components/FloatingDonateButton';
 
-export default function Layout({ children }) {
+export default function Layout({ children, hideFooter }) {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow w-full">{children}</main>
-      <Footer />
+      {!hideFooter && <Footer />}
       <FloatingDonateButton />
     </div>
   );

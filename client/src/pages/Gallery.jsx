@@ -1,17 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { Clock, Fire, Star, Heart, WhatsappLogo, Link as LinkIcon, Check } from '@phosphor-icons/react';
 import SEO from '../components/SEO';
 import ImageModal from '../components/ImageModal';
 
 export default function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [activeTab, setActiveTab] = useState('recent'); // 'recent', 'trending', 'promoted'
   const [galleryImages, setGalleryImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [likingId, setLikingId] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(10);
+  const [selectedImage, setSelectedImage] = useState(null);
   
-  const itemsPerPage = 8;
-  const currentPage = parseInt(searchParams.get('page')) || 1;
+  // Ref for double-tap logic
+  const clickTimeout = useRef(null);
+
+  // Sync selectedImage with URL param 'img'
+  useEffect(() => {
+    const imgParam = searchParams.get('img');
+    if (imgParam) {
+      setSelectedImage(imgParam);
+    } else {
+      setSelectedImage(null);
+    }
+  }, [searchParams]);
 
   // Fetch Gallery from Backend
   useEffect(() => {
@@ -27,36 +41,73 @@ export default function Gallery() {
       });
   }, []);
 
-  const totalPages = Math.ceil(galleryImages.length / itemsPerPage);
-  const validPage = Math.max(1, Math.min(currentPage, totalPages || 1));
-
-  // Sync selectedImage with URL param 'img'
+  // Infinite Scroll Hook
   useEffect(() => {
-    if (galleryImages.length === 0) return;
-    const imgParam = searchParams.get('img');
-    if (imgParam) {
-      const exists = galleryImages.find(i => i.image_url === imgParam);
-      if (exists) {
-        setSelectedImage(imgParam);
-        const imgIndex = galleryImages.findIndex(i => i.image_url === imgParam);
-        const imgPage = Math.floor(imgIndex / itemsPerPage) + 1;
-        if (imgPage !== validPage) {
-          setSearchParams(prev => {
-            prev.set('page', imgPage);
-            return prev;
-          }, { replace: true });
-        }
+    const handleScroll = () => {
+       if (window.innerHeight + document.documentElement.scrollTop + 200 >= document.documentElement.offsetHeight) {
+          setVisibleCount(prev => prev + 10);
+       }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Reset infinite scroll count when swapping tabs
+  useEffect(() => {
+    setVisibleCount(10);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [activeTab]);
+
+  const handleLike = async (id) => {
+    if (likingId) return; // Prevent double taps
+    setLikingId(id);
+    try {
+      const res = await fetch(`/api/gallery/${id}/like`, { method: 'PUT' });
+      if (res.ok) {
+        // Optimistic update
+        setGalleryImages(prev => prev.map(img => 
+          img.id === id ? { ...img, likes: (img.likes || 0) + 1 } : img
+        ));
       }
-    } else {
-      setSelectedImage(null);
+    } catch (err) {
+      console.error('Like failed', err);
     }
-  }, [searchParams, galleryImages, validPage]);
+    setLikingId(null);
+  };
+
+  const copyToClipboard = (url, id) => {
+    const fullUrl = `${window.location.origin}/gallery?img=${encodeURIComponent(url)}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const shareOnWhatsApp = (url) => {
+    const fullUrl = `${window.location.origin}/gallery?img=${encodeURIComponent(url)}`;
+    const shareText = `Check out this highlight from HinduVahini Journey:`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText + " " + fullUrl)}`, '_blank');
+  };
 
   const handleSelectImage = (src) => {
     setSearchParams(prev => {
       prev.set('img', src);
       return prev;
     });
+  };
+
+  const handleImageInteraction = (img, event) => {
+    // If it's a double tap (click count === 2)
+    if (event.detail === 2) {
+      if (clickTimeout.current) clearTimeout(clickTimeout.current);
+      handleLike(img.id);
+      
+      // Optional: Visual 'Heart' flash here could be added later
+    } else if (event.detail === 1) {
+      // Single tap - slight delay to wait and see if it becomes a double tap
+      clickTimeout.current = setTimeout(() => {
+        handleSelectImage(img.image_url);
+      }, 250);
+    }
   };
 
   const handleCloseImage = () => {
@@ -66,140 +117,195 @@ export default function Gallery() {
     });
   };
 
-  const paginate = (pageNumber) => {
-    setSearchParams(prev => {
-      prev.set('page', pageNumber);
-      return prev;
-    });
-    window.scrollTo({ top: 400, behavior: 'smooth' });
-  };
-
-  const getPageNumbers = () => {
-    const pages = [];
-    const windowSize = 1; // Pages to show around current
-    
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      // Always show first
-      pages.push(1);
-      
-      if (validPage > windowSize + 3) {
-        pages.push('...');
-      }
-      
-      const start = Math.max(2, validPage - windowSize);
-      const end = Math.min(totalPages - 1, validPage + windowSize);
-      
-      // If we are near the start, extend the end
-      let finalStart = start;
-      let finalEnd = end;
-      if (validPage <= windowSize + 2) finalEnd = Math.min(totalPages - 1, windowSize * 2 + 3);
-      // If we are near the end, extend the start
-      if (validPage >= totalPages - (windowSize + 1)) finalStart = Math.max(2, totalPages - (windowSize * 2 + 2));
-
-      for (let i = finalStart; i <= finalEnd; i++) {
-        pages.push(i);
-      }
-      
-      if (validPage < totalPages - (windowSize + 2)) {
-        pages.push('...');
-      }
-      
-      // Always show last
-      pages.push(totalPages);
+  // Filter and sort based on tab
+  const getDisplayData = () => {
+    let data = [...galleryImages];
+    if (activeTab === 'promoted') {
+      data = data.filter(img => img.is_promoted);
+    } else if (activeTab === 'trending') {
+      data.sort((a, b) => (b.likes || 0) - (a.likes || 0));
     }
-    return pages;
+    // "recent" is already sorted by the backend by display_order ASC, id DESC
+    return data;
   };
 
-  const indexOfLastItem = validPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = galleryImages.slice(indexOfFirstItem, indexOfLastItem);
+  const allDisplayData = getDisplayData();
+  const displayData = allDisplayData.slice(0, visibleCount);
 
   return (
-    <div className="pt-32 pb-24 bg-light min-h-screen">
+    <div className="bg-[#f8f9fa] min-h-screen pb-20">
       <SEO 
-        title={selectedImage ? "Photo Highlight" : `Journey Highlights — Page ${validPage}`} 
-        description={selectedImage ? "View this special moment from our community journey." : `Explore our recent event photos on page ${validPage}. Glimpses of community gatherings and cultural initiatives.`}
-        url={selectedImage ? `/gallery?page=${validPage}&img=${encodeURIComponent(selectedImage)}` : `/gallery?page=${validPage}`}
+        title={selectedImage ? "Photo Highlight" : "Social Feed | HinduVahini Journey"} 
+        description={selectedImage ? "View this special moment from our community journey." : "Explore our recent moments, trending activities, and sponsored posts in our dedicated social feed."}
+        url={selectedImage ? `/gallery?img=${encodeURIComponent(selectedImage)}` : `/gallery`}
         image={selectedImage}
       />
-       <div className="max-w-7xl mx-auto px-6 text-center">
-         <div className="mb-16">
-           <h1 className="text-4xl md:text-5xl font-bold text-dark mb-4 drop-shadow-sm font-heading">Journey Highlights</h1>
-           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">Glimpses of our recent events, community gatherings, and cultural initiatives.</p>
+
+      {/* Header */}
+      <header className="bg-white sticky top-0 z-40 border-b border-gray-100 px-4 py-3 shadow-sm flex items-center justify-between">
+         <h1 className="text-xl font-bold font-heading text-dark tracking-tight">Journey Feed</h1>
+         <div className="w-8 h-8 rounded-full bg-saffron/10 text-saffron flex items-center justify-center font-bold text-xs uppercase tracking-widest border border-saffron/20">
+           {activeTab.charAt(0)}
          </div>
-         
-         {/* Gallery Grid */}
-         {loading ? (
-           <div className="text-center py-20 text-gray-400">Loading Gallery...</div>
-         ) : (
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] mb-16 px-2">
-             {currentItems.map((img, i) => (
-               <div 
-                 key={img.id || i} 
-                 onClick={() => handleSelectImage(img.image_url)}
-                 className={`relative rounded-xl overflow-hidden shadow-sm hover:shadow-img transition-shadow duration-300 ${img.span_classes} animation-slide-up group cursor-pointer`} 
-                 style={{ animationDelay: `${(i % itemsPerPage) * 0.1}s` }}
-               >
-                 <img src={img.image_url} alt="Gallery" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                 <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                   <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-sm">View Full Size</span>
-                 </div>
-               </div>
-             ))}
-           </div>
-         )}
+      </header>
 
-         {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="w-full flex items-center justify-center mt-12 py-2">
-            <div className="flex items-center gap-1 sm:gap-2 max-w-full flex-wrap justify-center">
-
-              {/* Prev Button */}
-              <button
-                onClick={() => paginate(validPage - 1)}
-                disabled={validPage === 1}
-                className={`p-1.5 sm:p-2 rounded-full border border-gray-200 transition-all shrink-0 ${validPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
-              >
-                <CaretLeft size={18} weight="bold" />
-              </button>
-
-              {/* Page Numbers */}
-              {getPageNumbers().map((page, i) => (
-                page === '...' ? (
-                  <span key={`ellipsis-${i}`} className="w-6 sm:w-8 flex items-center justify-center text-gray-400 font-bold text-sm">…</span>
-                ) : (
-                  <button
-                    key={page}
-                    onClick={() => paginate(page)}
-                    className={`w-8 h-8 sm:w-10 sm:h-10 text-sm rounded-full font-bold transition-all border shrink-0 ${validPage === page ? 'bg-saffron border-saffron text-white shadow-md scale-105' : 'bg-white border-gray-200 text-gray-500 hover:border-saffron hover:text-saffron'}`}
-                  >
-                    {page}
-                  </button>
-                )
-              ))}
-
-              {/* Next Button */}
-              <button
-                onClick={() => paginate(validPage + 1)}
-                disabled={validPage === totalPages}
-                className={`p-1.5 sm:p-2 rounded-full border border-gray-200 transition-all shrink-0 ${validPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-dark hover:bg-saffron hover:text-white hover:border-saffron shadow-sm'}`}
-              >
-                <CaretRight size={18} weight="bold" />
-              </button>
-            </div>
+      {/* Feed Content */}
+      <div className="max-w-xl mx-auto pt-4 pb-12 px-0 sm:px-4 space-y-6">
+        {loading ? (
+          <div className="text-center py-20 text-gray-400">
+            <div className="w-8 h-8 border-4 border-gray-200 border-t-saffron rounded-full animate-spin mx-auto mb-3"></div>
+            Loading Feed...
           </div>
+        ) : displayData.length === 0 ? (
+          <div className="text-center py-20 text-gray-400 px-6">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Star size={32} className="text-gray-300" />
+            </div>
+            <p className="text-lg font-bold text-gray-400 mb-1">No Posts Yet</p>
+            <p className="text-sm">There are no {activeTab} posts to display right now. Check back later!</p>
+          </div>
+        ) : (
+          displayData.map((img) => (
+            <article key={img.id} className="bg-white border-y sm:border sm:rounded-2xl border-gray-100 overflow-hidden shadow-sm animation-slide-up">
+              
+              {/* Header/Sponsored Tag */}
+              {img.is_promoted ? (
+                <div className="px-4 py-3 flex items-center justify-between border-b border-gray-50 bg-yellow-50/30">
+                   <div className="flex items-center gap-2">
+                     <div className="w-6 h-6 rounded-full bg-saffron/20 flex items-center justify-center text-saffron shadow-sm">
+                       <Star size={12} weight="fill" />
+                     </div>
+                     <span className="text-xs font-black uppercase tracking-widest text-saffron">Sponsored Post</span>
+                   </div>
+                </div>
+              ) : (
+                <div className="px-4 py-3 flex items-center gap-2 border-b border-gray-50">
+                    <img src="/logo.png" alt="HV" className="w-6 h-6 rounded-full border border-gray-100" />
+                    <span className="text-xs font-bold text-dark">HinduVahini</span>
+                </div>
+              )}
+
+              {/* Image */}
+              <div 
+                className="relative bg-gray-100 w-full aspect-auto flex items-center justify-center group overflow-hidden cursor-pointer"
+                onClick={(e) => handleImageInteraction(img, e)}
+              >
+                <img 
+                  src={img.image_url} 
+                  alt="Post" 
+                  className="w-full h-auto object-cover max-h-[600px] transition-transform duration-700 bg-black group-hover:scale-105"
+                  loading="lazy" 
+                />
+                <div className="absolute inset-0 bg-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[1px] pointer-events-none">
+                  <span className="text-white font-medium tracking-wide bg-dark/40 px-4 py-2 rounded-full text-sm shadow-xl">Double Tap to Like</span>
+                </div>
+              </div>
+
+              {/* Action Bar */}
+              <div className="px-4 py-3 flex items-center gap-4">
+                 <button 
+                   onClick={() => handleLike(img.id)}
+                   disabled={likingId === img.id}
+                   className="flex items-center group transition-all hover:scale-110 active:scale-90"
+                   aria-label="Like Post"
+                 >
+                    <Heart 
+                      size={24} 
+                      className="text-gray-400 group-hover:text-red-500 transition-colors" 
+                      weight={img.likes > 0 ? "fill" : "regular"}
+                      color={img.likes > 0 ? "#ef4444" : undefined}
+                    />
+                 </button>
+
+                 <button 
+                   onClick={() => shareOnWhatsApp(img.image_url)}
+                   className="flex items-center text-[#25D366] hover:opacity-80 transition-all hover:scale-110 active:scale-90"
+                   aria-label="Share via WhatsApp"
+                 >
+                    <WhatsappLogo size={22} weight="fill" />
+                 </button>
+
+                 <button 
+                   onClick={() => copyToClipboard(img.image_url, img.id)}
+                   className="flex items-center text-gray-400 hover:text-dark transition-all hover:scale-110 active:scale-90"
+                   aria-label="Copy Link"
+                 >
+                    {copiedId === img.id ? (
+                      <Check size={22} weight="bold" className="text-green-500" />
+                    ) : (
+                      <LinkIcon size={22} weight="bold" />
+                    )}
+                 </button>
+              </div>
+
+              {/* Meta & Description */}
+              <div className="px-4 pb-4">
+                {img.likes > 0 && (
+                  <p className="text-sm font-bold text-dark mb-1">{img.likes.toLocaleString()} likes</p>
+                )}
+                
+                {(img.title || img.description) && (
+                  <div className="text-sm text-gray-800 leading-relaxed mt-2">
+                    {img.title && <span className="font-bold mr-2">{img.title}</span>}
+                    {img.description && <span className="text-gray-600">{img.description}</span>}
+                  </div>
+                )}
+                <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-2 font-semibold">
+                  {new Date(img.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+            </article>
+          ))
         )}
 
-         {/* Image Modal */}
-         {selectedImage && (
-           <ImageModal 
-             image={selectedImage} 
-             onClose={handleCloseImage} 
-           />
-         )}
-       </div>
+        {!loading && displayData.length < allDisplayData.length && (
+           <div className="w-full flex justify-center py-6">
+             <div className="w-6 h-6 border-2 border-gray-200 border-t-saffron rounded-full animate-spin"></div>
+           </div>
+        )}
+      </div>
+
+      {/* Image Modal (Full Preview with its own sharing functions mapping identically to old layout) */}
+      {selectedImage && (
+        <ImageModal 
+          image={selectedImage} 
+          onClose={handleCloseImage} 
+        />
+      )}
+
+      {/* Bottom Navigation Menu */}
+      <nav className="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 pb-safe">
+        <ul className="flex items-center justify-around max-w-xl mx-auto h-16">
+          <li>
+            <button 
+              onClick={() => setActiveTab('recent')}
+              className={`flex flex-col items-center justify-center w-20 h-full gap-1 transition-all ${activeTab === 'recent' ? 'text-saffron scale-110' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              <Clock size={24} weight={activeTab === 'recent' ? 'fill' : 'regular'} />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Recent</span>
+            </button>
+          </li>
+          <li>
+            <button 
+              onClick={() => setActiveTab('trending')}
+              className={`flex flex-col items-center justify-center w-20 h-full gap-1 transition-all ${activeTab === 'trending' ? 'text-saffron scale-110' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              <Fire size={24} weight={activeTab === 'trending' ? 'fill' : 'regular'} />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Trending</span>
+            </button>
+          </li>
+          <li>
+            <button 
+              onClick={() => setActiveTab('promoted')}
+              className={`flex flex-col items-center justify-center w-20 h-full gap-1 transition-all ${activeTab === 'promoted' ? 'text-saffron scale-110' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              <Star size={24} weight={activeTab === 'promoted' ? 'fill' : 'regular'} />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Promoted</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      
     </div>
   );
 }

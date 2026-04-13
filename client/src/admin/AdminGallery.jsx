@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Images, Plus, Trash, X, UploadSimple, CornersOut, GridFour } from '@phosphor-icons/react';
+import { Images, Plus, Trash, X, UploadSimple, CornersOut, GridFour, Star, TextT } from '@phosphor-icons/react';
 
 const AdminGallery = () => {
   const [images, setImages] = useState([]);
@@ -11,6 +11,9 @@ const AdminGallery = () => {
   // Selection/Upload State
   const [spanClass, setSpanClass] = useState('row-span-1 col-span-1');
   const [displayOrder, setDisplayOrder] = useState(0);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [isPromoted, setIsPromoted] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -54,6 +57,26 @@ const AdminGallery = () => {
     }
   };
 
+  const handleTogglePromote = async (img) => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`/api/admin/gallery/${img.id}/promote`, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ is_promoted: !img.is_promoted })
+      });
+      
+      if (!response.ok) throw new Error('Update failed');
+      
+      setImages(images.map(i => i.id === img.id ? { ...i, is_promoted: !img.is_promoted } : i));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -75,6 +98,9 @@ const AdminGallery = () => {
     data.append('image', imageFile);
     data.append('span_classes', spanClass);
     data.append('display_order', displayOrder);
+    data.append('title', title);
+    data.append('description', description);
+    data.append('is_promoted', isPromoted);
 
     try {
       const response = await fetch('/api/admin/gallery', {
@@ -88,6 +114,9 @@ const AdminGallery = () => {
       setShowModal(false);
       setImageFile(null);
       setImagePreview(null);
+      setTitle('');
+      setDescription('');
+      setIsPromoted(false);
       fetchGallery(); // Refresh list
     } catch (err) {
       alert(err.message);
@@ -150,14 +179,28 @@ const AdminGallery = () => {
                    {img.span_classes.split(' ')[0]}
                 </div>
 
+                {img.is_promoted && (
+                  <div className="absolute top-2 right-2 px-2 py-1 bg-saffron/90 text-white backdrop-blur-md rounded-md text-[9px] font-bold uppercase tracking-widest shadow-lg flex items-center gap-1">
+                     <Star size={10} weight="fill" /> Promoted
+                  </div>
+                )}
+
                 {/* Overlay Actions */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                   <button 
-                      onClick={() => handleDelete(img.id)}
-                      className="p-3 bg-red-500/80 hover:bg-red-500 text-white rounded-2xl transition-all hover:scale-110 shadow-lg"
-                   >
-                      <Trash size={22} weight="bold" />
-                   </button>
+                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
+                   <div className="flex items-center gap-2">
+                     <button 
+                        onClick={() => handleTogglePromote(img)}
+                        className={`p-2.5 rounded-xl transition-all shadow-lg text-white font-bold text-xs flex items-center gap-1.5 ${img.is_promoted ? 'bg-saffron hover:bg-saffron/80' : 'bg-white/20 hover:bg-white/30 backdrop-blur-sm'}`}
+                     >
+                        <Star size={18} weight={img.is_promoted ? "fill" : "bold"} /> {img.is_promoted ? 'Unpromote' : 'Promote'}
+                     </button>
+                     <button 
+                        onClick={() => handleDelete(img.id)}
+                        className="p-2.5 bg-red-500/80 hover:bg-red-500 text-white rounded-xl transition-all shadow-lg"
+                     >
+                        <Trash size={18} weight="bold" />
+                     </button>
+                   </div>
                 </div>
               </div>
             ))}
@@ -273,17 +316,48 @@ const AdminGallery = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-                    <CornersOut size={14} />
-                    Priority Order
-                  </label>
-                  <input 
-                    type="number"
-                    value={displayOrder}
-                    onChange={(e) => setDisplayOrder(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-saffron/50 transition-all font-medium text-sm"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                      <TextT size={14} /> Title (Optional)
+                    </label>
+                    <input 
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g. Navratri Festival Celebration"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-saffron/50 transition-all font-medium text-sm"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                      <TextT size={14} /> Description (Optional)
+                    </label>
+                    <textarea 
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Add briefly what this image is about..."
+                      rows="2"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-saffron/50 transition-all font-medium text-sm resize-none"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                       <Star size={16} className="text-saffron" weight="fill" /> Sponsor / Promote
+                    </h4>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Pin to the Promoted Social Tab</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsPromoted(!isPromoted)}
+                    className={`w-12 h-6 rounded-full transition-colors relative ${isPromoted ? 'bg-saffron' : 'bg-gray-600'}`}
+                  >
+                    <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${isPromoted ? 'translate-x-6' : ''}`}></div>
+                  </button>
                 </div>
               </div>
 
