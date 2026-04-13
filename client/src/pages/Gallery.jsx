@@ -126,7 +126,17 @@ export default function Gallery() {
     if (activeTab === 'promoted') {
       data = data.filter(img => img.is_promoted);
     } else if (activeTab === 'trending') {
-      data.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      // Best Practice: "Hot Gravity Algorithm" (similar to Reddit/HackerNews)
+      // Score = Likes / (HoursSincePosted + 2)^Gravity
+      // This prevents old highly-liked photos from dominating forever, giving fresh uploads a chance!
+      const calculateTrendingScore = (img) => {
+        const likes = img.likes || 0;
+        const postDate = img.created_at ? new Date(img.created_at) : new Date();
+        const hoursAge = (new Date() - postDate) / (1000 * 60 * 60); 
+        const gravity = 1.8; // Higher gravity = ages out faster
+        return likes / Math.pow(Math.max(hoursAge, 0) + 2, gravity);
+      };
+      data.sort((a, b) => calculateTrendingScore(b) - calculateTrendingScore(a));
     }
     // "recent" is already sorted by the backend by display_order ASC, id DESC
     return data;
